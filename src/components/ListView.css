@@ -1,0 +1,296 @@
+/* ============================================
+   LIST VIEW STYLES
+   ============================================ */
+.list-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.list-view-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.list-view-body>* {
+    width: 100%;
+    max-width: 480px;
+}
+
+/* Week Group */
+.week-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border);
+}
+
+.week-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(244, 63, 94, 0.2);
+}
+
+.week-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #f43f5e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.week-range {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.week-total-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #be123c;
+    background: rgba(244, 63, 94, 0.08);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* Day Group */
+.day-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border-left: 3px solid var(--border);
+}
+
+.day-header.today {
+    background: rgba(5, 150, 105, 0.08);
+    border-left-color: var(--primary);
+}
+
+.day-header.today .day-date {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.day-header.holiday {
+    background: rgba(254, 242, 242, 0.6);
+    border-left-color: #dc2626;
+}
+
+.day-header.weekend {
+    background: #f1f5f9;
+    opacity: 0.8;
+}
+
+.day-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.day-date {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+    text-transform: capitalize;
+}
+
+.holiday-badge {
+    font-size: 0.65rem;
+    color: #dc2626;
+    background: rgba(254, 242, 242, 0.8);
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+.day-total {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* Payment Items */
+.day-payments {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 8px;
+}
+
+.list-payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #fafafa;
+    border-radius: 6px;
+    border-left: 3px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.list-payment-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Category-specific styling */
+.list-payment-item.category-boletos {
+    background: rgba(59, 130, 246, 0.06);
+    border-left-color: #3b82f6;
+}
+
+.list-payment-item.category-financiamentos {
+    background: rgba(245, 158, 11, 0.06);
+    border-left-color: #f59e0b;
+}
+
+.list-payment-item.category-emprestimos {
+    background: rgba(239, 68, 68, 0.06);
+    border-left-color: #ef4444;
+}
+
+.list-payment-item.category-anuais {
+    background: rgba(139, 92, 246, 0.06);
+    border-left-color: #8b5cf6;
+}
+
+.list-payment-item.category-impostos {
+    background: rgba(249, 115, 22, 0.06);
+    border-left-color: #f97316;
+}
+
+.list-payment-item.category-manual {
+    background: rgba(236, 72, 153, 0.06);
+    border-left-color: #ec4899;
+}
+
+.list-payment-item.category-recorrentes {
+    background: rgba(100, 116, 139, 0.06);
+    border-left-color: #64748b;
+}
+
+.list-payment-item.category-mensais {
+    background: rgba(6, 182, 212, 0.06);
+    border-left-color: #06b6d4;
+}
+
+.list-payment-item.category-lila {
+    background: rgba(244, 114, 182, 0.06);
+    border-left-color: #f472b6;
+}
+
+.list-payment-item.category-bruno {
+    background: rgba(74, 222, 128, 0.06);
+    border-left-color: #4ade80;
+}
+
+.payment-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.list-view .payment-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.payment-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.payment-installment {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.payment-category {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.payment-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+/* No Payments */
+.no-payments {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-style: italic;
+}
+
+/* Footer */
+.list-view-footer {
+    text-align: right;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-top: 1px solid var(--border);
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    position: sticky;
+    bottom: 0;
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .list-view-footer {
+        padding: 16px 12px;
+        font-size: 1rem;
+    }
+
+    .category-breakdown {
+        font-size: 0.85rem;
+    }
+}

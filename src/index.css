@@ -56,6 +56,56 @@ body {
   background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
 }
 
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 16px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.main-header .month-tabs-container {
+  flex: 1;
+  min-width: 0;
+  border-bottom: none;
+}
+
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-toggle-btn:hover {
+  background: #f1f5f9;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.view-toggle-btn.list {
+  background: rgba(5, 150, 105, 0.08);
+  border-color: rgba(5, 150, 105, 0.3);
+  color: var(--primary);
+}
+
+.view-toggle-btn svg {
+  flex-shrink: 0;
+}
+
 /* ============================================
    MOBILE LAYOUT (< 768px)
    ============================================ */
@@ -102,6 +152,16 @@ body {
 
   .mobile-only {
     display: block !important;
+  }
+
+  /* Remove padding from main-header on mobile to allow full-width nav */
+  .main-header {
+    padding-right: 0;
+  }
+
+  /* Ensure mobile navigation occupies full width */
+  .mobile-month-nav {
+    width: 100% !important;
   }
 }
 
