@@ -1,9 +1,61 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['vite.svg'],
+      manifest: {
+        name: 'PayFlow - Calendário de Pagamentos',
+        short_name: 'PayFlow',
+        description: 'Gerencie seus pagamentos mensais com um calendário intuitivo',
+        theme_color: '#1a1a2e',
+        background_color: '#1a1a2e',
+        display: 'standalone',
+        start_url: '/PayFlow/',
+        scope: '/PayFlow/',
+        icons: [
+          {
+            src: 'vite.svg',
+            sizes: '32x32',
+            type: 'image/svg+xml'
+          },
+          {
+            src: 'vite.svg',
+            sizes: '192x192',
+            type: 'image/svg+xml',
+            purpose: 'any'
+          },
+          {
+            src: 'vite.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,csv}'],
+        runtimeCaching: [
+          {
+            urlPattern: /\.csv$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'csv-data',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+              }
+            }
+          }
+        ]
+      }
+    })
+  ],
   base: '/PayFlow/',
   publicDir: 'data',
 })
