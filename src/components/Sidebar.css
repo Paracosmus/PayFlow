@@ -33,8 +33,119 @@
     flex-direction: column;
     gap: 15px;
     overflow-y: auto;
-    flex: 1;
+    flex: 0 0 auto;
     padding-right: 5px;
+}
+
+/* Compact mode for accounts grid to save vertical space */
+.accounts-grid.compact {
+    gap: 10px;
+}
+
+.accounts-grid.compact .owner-group {
+    padding: 10px 12px;
+}
+
+.accounts-grid.compact .owner-label {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+.accounts-grid.compact .owner-total {
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+}
+
+.accounts-grid.compact .owner-divider {
+    margin: 4px 0 8px;
+}
+
+.accounts-grid.compact .owner-items {
+    gap: 4px;
+}
+
+.accounts-grid.compact .owner-item-row {
+    font-size: 0.8rem;
+    padding: 1px 0;
+}
+
+.accounts-grid.compact .total-box {
+    padding: 10px 12px;
+}
+
+.accounts-grid.compact .total-box .acc-value {
+    font-size: 1.2rem;
+}
+
+/* ============================================
+   CATEGORY TOGGLES
+   ============================================ */
+.category-toggles {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+.toggles-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.toggles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.category-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.category-toggle-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.category-toggle-btn.disabled {
+    opacity: 0.6;
+}
+
+.category-toggle-btn.disabled:hover {
+    opacity: 0.8;
+}
+
+.toggle-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease;
+}
+
+.toggle-name {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toggle-name.muted {
+    color: var(--text-muted);
 }
 
 .account-box {

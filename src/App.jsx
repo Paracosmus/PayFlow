@@ -7,11 +7,46 @@ import { normalizeFixedDate, adjustToBusinessDay } from './utils/dateUtils';
 import { calculateTotals } from './utils/financials';
 import './index.css';
 
+// All categories available in the app
+const ALL_CATEGORIES = [
+  'boletos',
+  'financiamentos',
+  'emprestimos',
+  'anuais',
+  'impostos',
+  'recorrentes',
+  'mensais',
+  'lila',
+  'bruno'
+];
+
 function App() {
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tabs, setTabs] = useState([]);
+
+  // Category visibility state - Set of disabled categories
+  // On mobile, disable 'bruno' and 'lila' by default
+  const [disabledCategories, setDisabledCategories] = useState(() => {
+    if (window.innerWidth <= 768) {
+      return new Set(['bruno', 'lila']);
+    }
+    return new Set();
+  });
+
+  // Toggle category visibility
+  const toggleCategory = (category) => {
+    setDisabledCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
 
   // Mobile responsive state
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -64,7 +99,10 @@ function App() {
           'emprestimos',
           'anuais',
           'impostos',
-          'recorrentes'
+          'recorrentes',
+          'mensais',
+          'lila',
+          'bruno'
         ];
 
         const fetchFile = async (name) => {
@@ -96,7 +134,7 @@ function App() {
                   totalInstallments: null
                 });
               });
-            } else if (file.name === 'recorrentes') {
+            } else if (file.name === 'recorrentes' || file.name === 'mensais' || file.name === 'lila' || file.name === 'bruno') {
               const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
               years.forEach(year => {
                 for (let month = 1; month <= 12; month++) {
@@ -139,7 +177,7 @@ function App() {
 
               adjustedDate = adjustToBusinessDay(adjustedDate);
 
-              if (file.name !== 'anuais' && file.name !== 'recorrentes') {
+              if (file.name !== 'anuais' && file.name !== 'recorrentes' && file.name !== 'mensais' && file.name !== 'lila' && file.name !== 'bruno') {
                 if (adjustedDate > maxDataDate) {
                   maxDataDate = adjustedDate;
                 }
@@ -183,9 +221,14 @@ function App() {
     loadData();
   }, []);
 
+  // Filter transactions based on disabled categories
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(t => !disabledCategories.has(t.category));
+  }, [transactions, disabledCategories]);
+
   const totals = useMemo(() => {
-    return calculateTotals(transactions);
-  }, [transactions]);
+    return calculateTotals(filteredTransactions);
+  }, [filteredTransactions]);
 
   const handleTabClick = (date) => {
     setCurrentDate(date);
@@ -211,6 +254,9 @@ function App() {
           selectedPayment={selectedPayment}
           onBack={handleClearSelection}
           isMobile={false}
+          categories={ALL_CATEGORIES}
+          disabledCategories={disabledCategories}
+          onToggleCategory={toggleCategory}
         />
       )}
 
@@ -223,7 +269,7 @@ function App() {
         <Calendar
           year={currentDate.getFullYear()}
           month={currentDate.getMonth()}
-          transactions={transactions}
+          transactions={filteredTransactions}
           onPaymentClick={handlePaymentClick}
         />
       </main>

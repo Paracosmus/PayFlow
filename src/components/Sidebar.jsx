@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import './Sidebar.css';
 
-export default function Sidebar({ accounts, selectedPayment, onBack, isMobile = false, isOpen = false, onClose }) {
+export default function Sidebar({ accounts, selectedPayment, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory }) {
     const formatCurrency = (val) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     };
@@ -43,6 +43,69 @@ export default function Sidebar({ accounts, selectedPayment, onBack, isMobile = 
         };
     };
 
+    // Category colors matching Calendar.jsx
+    const getCategoryColor = (category) => {
+        const colors = {
+            'boletos': '#3b82f6',
+            'financiamentos': '#f59e0b',
+            'emprestimos': '#ef4444',
+            'anuais': '#8b5cf6',
+            'impostos': '#f97316',
+            'manual': '#ec4899',
+            'recorrentes': '#64748b',
+            'mensais': '#06b6d4',
+            'lila': '#f472b6',
+            'bruno': '#4ade80'
+        };
+        return colors[category] || '#64748b';
+    };
+
+    const categoryNames = {
+        'boletos': 'Boletos',
+        'financiamentos': 'Financ.',
+        'emprestimos': 'Emprést.',
+        'anuais': 'Anuais',
+        'impostos': 'Impostos',
+        'recorrentes': 'Recorr.',
+        'mensais': 'Mensais',
+        'lila': 'Lila',
+        'bruno': 'Bruno'
+    };
+
+    // Category toggles section
+    const categoryToggles = categories.length > 0 && (
+        <div className="category-toggles">
+            <div className="toggles-label">Categorias</div>
+            <div className="toggles-grid">
+                {categories.map(cat => {
+                    const isDisabled = disabledCategories.has(cat);
+                    const color = getCategoryColor(cat);
+                    return (
+                        <button
+                            key={cat}
+                            className={`category-toggle-btn ${isDisabled ? 'disabled' : ''}`}
+                            onClick={() => onToggleCategory && onToggleCategory(cat)}
+                            style={{
+                                '--cat-color': color,
+                                borderColor: isDisabled ? 'var(--border)' : color,
+                                backgroundColor: isDisabled ? 'transparent' : `${color}15`
+                            }}
+                            title={isDisabled ? `Mostrar ${categoryNames[cat]}` : `Ocultar ${categoryNames[cat]}`}
+                        >
+                            <span
+                                className="toggle-dot"
+                                style={{ backgroundColor: isDisabled ? 'var(--border)' : color }}
+                            />
+                            <span className={`toggle-name ${isDisabled ? 'muted' : ''}`}>
+                                {categoryNames[cat] || cat}
+                            </span>
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+
     // Content to render (shared between desktop and mobile)
     const sidebarContent = (
         <>
@@ -73,38 +136,41 @@ export default function Sidebar({ accounts, selectedPayment, onBack, isMobile = 
                     </div>
                 </div>
             ) : (
-                <div className="accounts-grid">
-                    {Object.entries(
-                        (accounts || []).reduce((groups, acc) => {
-                            const name = acc.account;
-                            if (!groups[name]) groups[name] = { total: 0, items: [] };
-                            groups[name].total += parseFloat(acc.value) || 0;
-                            groups[name].items.push(acc);
-                            return groups;
-                        }, {})
-                    ).map(([owner, data]) => (
-                        <div key={owner} className="account-box owner-group">
-                            <div className="acc-label owner-label">{owner}</div>
-                            <div className="acc-value owner-total">{formatCurrency(data.total)}</div>
-                            <div className="owner-divider"></div>
-                            <div className="owner-items">
-                                {data.items.map((item, idx) => (
-                                    <div key={idx} className="owner-item-row">
-                                        <div className="owner-bank-name" style={{ color: getBankStyle(item.bank).borderColor }}>{item.bank}</div>
-                                        <div className="owner-item-val">{formatCurrency(parseFloat(item.value))}</div>
-                                    </div>
-                                ))}
+                <>
+                    <div className="accounts-grid compact">
+                        {Object.entries(
+                            (accounts || []).reduce((groups, acc) => {
+                                const name = acc.account;
+                                if (!groups[name]) groups[name] = { total: 0, items: [] };
+                                groups[name].total += parseFloat(acc.value) || 0;
+                                groups[name].items.push(acc);
+                                return groups;
+                            }, {})
+                        ).map(([owner, data]) => (
+                            <div key={owner} className="account-box owner-group">
+                                <div className="acc-label owner-label">{owner}</div>
+                                <div className="acc-value owner-total">{formatCurrency(data.total)}</div>
+                                <div className="owner-divider"></div>
+                                <div className="owner-items">
+                                    {data.items.map((item, idx) => (
+                                        <div key={idx} className="owner-item-row">
+                                            <div className="owner-bank-name" style={{ color: getBankStyle(item.bank).borderColor }}>{item.bank}</div>
+                                            <div className="owner-item-val">{formatCurrency(parseFloat(item.value))}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+
+                        <div className="account-box total-box">
+                            <div className="acc-label">Saldo Total Geral</div>
+                            <div className="acc-value">
+                                {formatCurrency(totalBalance)}
                             </div>
                         </div>
-                    ))}
-
-                    <div className="account-box total-box">
-                        <div className="acc-label">Saldo Total Geral</div>
-                        <div className="acc-value">
-                            {formatCurrency(totalBalance)}
-                        </div>
                     </div>
-                </div>
+                    {categoryToggles}
+                </>
             )}
         </>
     );

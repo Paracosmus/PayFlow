@@ -97,6 +97,20 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
         categoryTotals[p.category] += (parseFloat(p.Value) || 0);
     });
 
+    // Calculate remaining total (total - past days payments, not counting today)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const pastDaysPayments = currentMonthPayments.filter(t => {
+        const tDate = new Date(t.date);
+        tDate.setHours(0, 0, 0, 0);
+        return tDate < today;
+    });
+
+    const monthTotal = currentMonthPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    const paidTotal = pastDaysPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    const remainingTotal = monthTotal - paidTotal;
+
     const categoryNames = {
         'boletos': 'Boletos',
         'financiamentos': 'Financiamentos',
@@ -104,7 +118,10 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
         'anuais': 'Anuais',
         'impostos': 'Impostos',
         'manual': 'Manual',
-        'recorrentes': 'Recorrentes'
+        'recorrentes': 'Recorrentes',
+        'mensais': 'Mensais Fixos',
+        'lila': 'Lila',
+        'bruno': 'Bruno'
     };
 
     // Get category colors for dots
@@ -116,7 +133,10 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
             'anuais': '#8b5cf6',
             'impostos': '#f97316',
             'manual': '#ec4899',
-            'recorrentes': '#64748b'
+            'recorrentes': '#64748b',
+            'mensais': '#06b6d4',
+            'lila': '#f472b6',
+            'bruno': '#4ade80'
         };
         return colors[category] || '#64748b';
     };
@@ -255,11 +275,15 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
                                 </div>
                             ))}
                     </div>
-                    <div className="mobile-grand-total">
-                        <span>Total Mensal</span>
-                        <strong>
-                            {formatCurrency(currentMonthPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0))}
-                        </strong>
+                    <div className="mobile-totals-row">
+                        <div className="mobile-grand-total">
+                            <span>Total Mensal</span>
+                            <strong>{formatCurrency(monthTotal)}</strong>
+                        </div>
+                        <div className="mobile-remaining-total">
+                            <span>Falta Pagar</span>
+                            <strong>{formatCurrency(remainingTotal)}</strong>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -350,11 +374,15 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
                                 </div>
                             ))}
                     </div>
-                    <div className="grand-total">
-                        <span>Total em {month + 1}/{year}: </span>
-                        <span className="month-total-value">
-                            {formatCurrency(currentMonthPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0))}
-                        </span>
+                    <div className="totals-container">
+                        <div className="grand-total">
+                            <span>Total em {month + 1}/{year}: </span>
+                            <span className="month-total-value">{formatCurrency(monthTotal)}</span>
+                        </div>
+                        <div className="remaining-total">
+                            <span>Falta Pagar: </span>
+                            <span className="remaining-total-value">{formatCurrency(remainingTotal)}</span>
+                        </div>
                     </div>
                 </div>
             </div>
