@@ -1,0 +1,455 @@
+/* ============================================
+   DESKTOP SIDEBAR STYLES
+   ============================================ */
+.sidebar {
+    position: relative;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.brand-icon {
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4));
+}
+
+.brand h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    background: linear-gradient(90deg, #059669, #34d399);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    white-space: nowrap;
+}
+
+.accounts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 5px;
+}
+
+.account-box {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+    min-height: 70px;
+    box-sizing: border-box;
+}
+
+.account-box:hover {
+    transform: translateX(5px);
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(5, 150, 105, 0.3);
+}
+
+.acc-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    opacity: 0.8;
+}
+
+.acc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.acc-sub-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: block;
+    margin-bottom: 0;
+}
+
+.acc-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.account-box.total-box {
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.total-box .acc-label {
+    color: var(--primary);
+}
+
+.total-box .acc-value {
+    font-size: 1.4rem;
+    color: var(--primary);
+}
+
+/* Scrollbar styling for accounts list */
+.accounts-grid::-webkit-scrollbar {
+    width: 4px;
+}
+
+.accounts-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.accounts-grid::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+}
+
+/* Details Panel */
+.details-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.back-btn {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-main);
+}
+
+.detail-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.detail-category {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    opacity: 0.7;
+}
+
+.detail-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.detail-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-top: 5px;
+}
+
+.detail-date {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.detail-installments {
+    font-size: 0.8rem;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+    color: var(--text-muted);
+}
+
+.detail-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 10px 0;
+}
+
+.detail-description-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.detail-description {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    line-height: 1.5;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    min-height: 60px;
+    margin: 0;
+}
+
+/* Detail card accent line */
+.detail-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--border);
+}
+
+.detail-card:has(.category-boletos)::before {
+    background: #3b82f6;
+}
+
+.detail-card:has(.category-financiamentos)::before {
+    background: #f59e0b;
+}
+
+.detail-card:has(.category-emprestimos)::before {
+    background: #ef4444;
+}
+
+.detail-card:has(.category-anuais)::before {
+    background: #8b5cf6;
+}
+
+.detail-card:has(.category-impostos)::before {
+    background: #f97316;
+}
+
+.detail-card:has(.category-manual)::before {
+    background: #ec4899;
+}
+
+.detail-card:has(.category-recorrentes)::before {
+    background: #64748b;
+}
+
+/* Owner Group Styles */
+.owner-group {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.owner-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+    border-color: rgba(5, 150, 105, 0.2);
+}
+
+.owner-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--border);
+    opacity: 0.5;
+    transition: background 0.2s;
+}
+
+.owner-group:hover::before {
+    background: var(--primary);
+    opacity: 1;
+}
+
+.owner-label {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.owner-total {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+}
+
+.owner-divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
+    margin: 8px 0 12px;
+}
+
+.owner-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.owner-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    padding: 2px 0;
+    border-radius: 4px;
+    transition: background 0.1s;
+}
+
+.owner-item-row:hover {
+    background: rgba(0, 0, 0, 0.02);
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-left: -4px;
+    margin-right: -4px;
+}
+
+.owner-bank-name {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.owner-item-val {
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   MOBILE SIDEBAR STYLES (Bottom Sheet)
+   ============================================ */
+@media (max-width: 768px) {
+
+    /* Disable hover effects on mobile */
+    .account-box:hover,
+    .owner-group:hover {
+        transform: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .owner-item-row:hover {
+        background: transparent;
+        padding-left: 0;
+        padding-right: 0;
+        margin: 0;
+    }
+}
+
+/* Mobile Bottom Sheet Header */
+.mobile-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.mobile-sidebar-header .brand {
+    margin-bottom: 0;
+}
+
+.mobile-sidebar-header .brand h2 {
+    font-size: 1.2rem;
+}
+
+.mobile-close-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mobile-close-btn:active {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(0.95);
+}
+
+/* Mobile-specific layout adjustments */
+@media (max-width: 768px) {
+    .mobile-sidebar .accounts-grid {
+        padding-right: 0;
+        max-height: calc(70vh - 120px);
+    }
+
+    .mobile-sidebar .owner-group {
+        padding: 12px;
+    }
+
+    .mobile-sidebar .owner-label {
+        font-size: 0.85rem;
+    }
+
+    .mobile-sidebar .owner-total {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+    }
+
+    .mobile-sidebar .account-box.total-box {
+        position: sticky;
+        bottom: 0;
+        background: var(--bg-panel);
+        margin-top: 10px;
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-sidebar .detail-card {
+        padding: 16px;
+    }
+
+    .mobile-sidebar .detail-title {
+        font-size: 1.1rem;
+    }
+
+    .mobile-sidebar .detail-value {
+        font-size: 1.3rem;
+    }
+}
