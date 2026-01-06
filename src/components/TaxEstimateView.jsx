@@ -100,7 +100,7 @@ export default function TaxEstimateView({ invoices }) {
                                             <span className="summary-value">{formatCurrency(sum12Months)}</span>
                                         </div>
                                         <div className="summary-row tax-row">
-                                            <span className="summary-label">Imposto estimado (15%):</span>
+                                            <span className="summary-label">Imposto Simples Nacional (mensal):</span>
                                             <span className="summary-value tax-value">{formatCurrency(tax)}</span>
                                         </div>
                                     </div>
@@ -136,7 +136,7 @@ export default function TaxEstimateView({ invoices }) {
         <div className="tax-estimate-view">
             <div className="view-header">
                 <h1>Imposto Estimado Mensal</h1>
-                <p className="view-description">Cálculo baseado nos últimos 12 meses (excluindo o mês alvo)</p>
+                <p className="view-description">Cálculo baseado no Simples Nacional (Anexo III) - faturamento dos últimos 12 meses</p>
             </div>
 
             <MonthSection

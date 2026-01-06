@@ -125,12 +125,37 @@ export const calculate12MonthSum = (invoices, targetYear, targetMonth, provider)
 };
 
 /**
- * Calculate estimated tax (15% of sum)
- * @param {number} sum - Sum to calculate tax on
- * @returns {number} Tax amount (15%)
+ * Calculate estimated tax using Simples Nacional (Anexo III - Serviços)
+ * Progressive rates based on 12-month revenue (RBT12)
+ * @param {number} rbt12 - Receita Bruta Total dos últimos 12 meses
+ * @returns {number} Tax amount based on Simples Nacional table
  */
-export const getTaxEstimate = (sum) => {
-    return sum * 0.15;
+export const getTaxEstimate = (rbt12) => {
+    // Simples Nacional - Anexo III (2024 values)
+    // Faixas de faturamento anual
+    const brackets = [
+        { limit: 180000, rate: 0.06, deduction: 0 },
+        { limit: 360000, rate: 0.112, deduction: 9360 },
+        { limit: 720000, rate: 0.135, deduction: 17640 },
+        { limit: 1800000, rate: 0.16, deduction: 35640 },
+        { limit: 3600000, rate: 0.21, deduction: 125640 },
+        { limit: Infinity, rate: 0.33, deduction: 648000 }
+    ];
+
+    // Find the applicable bracket
+    let applicableBracket = brackets[0];
+    for (const bracket of brackets) {
+        if (rbt12 <= bracket.limit) {
+            applicableBracket = bracket;
+            break;
+        }
+    }
+
+    // Calculate effective rate: (RBT12 × Alíquota) - Parcela a Deduzir
+    const totalTax = (rbt12 * applicableBracket.rate) - applicableBracket.deduction;
+
+    // Monthly tax estimate (divide by 12)
+    return totalTax / 12;
 };
 
 /**
