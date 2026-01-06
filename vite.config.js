@@ -39,23 +39,9 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,csv}'],
-        runtimeCaching: [
-          {
-            urlPattern: /\.csv$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'csv-data',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
-              }
-            }
-          }
-        ]
+        globPatterns: ['**/*.{js,css,html,svg,png}']
       }
     })
   ],
-  base: '/PayFlow/',
-  publicDir: 'data',
+  base: '/PayFlow/'
 })

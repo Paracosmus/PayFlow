@@ -374,18 +374,18 @@
     display: flex;
     align-items: center;
     padding: 8px 16px;
-    background: rgba(100, 116, 139, 0.1);
+    background: rgba(244, 63, 94, 0.05);
     border-radius: 8px;
-    border: 1px solid rgba(100, 116, 139, 0.2);
+    border: 1px solid rgba(244, 63, 94, 0.2);
 }
 
 .remaining-total span {
-    color: #64748b;
+    color: #f43f5e;
     font-weight: 500;
 }
 
 .remaining-total-value {
-    color: #475569;
+    color: #be123c;
     font-weight: 700;
     font-size: 1.4rem;
     margin-left: 10px;
@@ -768,15 +768,16 @@
     align-items: center;
     gap: 6px;
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: #f43f5e;
     padding: 4px 8px;
-    background: rgba(100, 116, 139, 0.1);
+    background: rgba(244, 63, 94, 0.05);
     border-radius: 6px;
+    border: 1px solid rgba(244, 63, 94, 0.1);
 }
 
 .mobile-remaining-total strong {
     font-size: 0.9rem;
-    color: #475569;
+    color: #be123c;
 }
 
 /* Hide desktop on mobile */

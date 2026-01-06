@@ -110,7 +110,9 @@ function App() {
         ];
 
         const fetchFile = async (name) => {
-          const response = await fetch(`${name}.csv`);
+          const { getCategoryURL } = await import('./config.js');
+          const url = getCategoryURL(name);
+          const response = await fetch(url);
           const text = await response.text();
           return { name, content: text };
         };
@@ -122,11 +124,46 @@ function App() {
 
         for (const file of files) {
           const parsed = parseCSV(file.content);
+          console.log(`Parsed ${parsed.length} items from ${file.name}`);
 
           parsed.forEach(item => {
+            // Validate that we have a date
+            if (!item.Date || typeof item.Date !== 'string') {
+              console.warn(`Skipping item with invalid date in ${file.name}:`, item);
+              return;
+            }
+
             const originalDateStr = item.Date;
-            const [y, m, d] = originalDateStr.split('-').map(Number);
+
+            // Parse date from Google Sheets format (DD/MM/YYYY)
+            let y, m, d;
+            if (originalDateStr.includes('/')) {
+              // Google Sheets format: DD/MM/YYYY (Brazilian/European format)
+              const parts = originalDateStr.split('/');
+              d = parseInt(parts[0]); // Day first
+              m = parseInt(parts[1]); // Month second
+              y = parseInt(parts[2]); // Year third
+            } else {
+              // Fallback to YYYY-MM-DD format
+              const parts = originalDateStr.split('-');
+              y = parseInt(parts[0]);
+              m = parseInt(parts[1]);
+              d = parseInt(parts[2]);
+            }
+
+            // Validate parsed date components
+            if (isNaN(y) || isNaN(m) || isNaN(d) || y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31) {
+              console.warn(`Skipping item with invalid date components in ${file.name}:`, originalDateStr, { y, m, d });
+              return;
+            }
+
             const installments = parseInt(item.Installments) || 1;
+
+            // Safety check: limit installments to prevent infinite loops
+            if (installments > 1000 || installments < 1) {
+              console.warn(`Skipping item with invalid installments in ${file.name}:`, installments);
+              return;
+            }
 
             let occurrences = [];
 
@@ -167,7 +204,9 @@ function App() {
                 });
               }
             } else {
-              occurrences.push({ dateStr: originalDateStr, currentInstallment: null, totalInstallments: null });
+              // For regular categories (boletos, impostos), use the parsed date in YYYY-MM-DD format
+              const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+              occurrences.push({ dateStr: dateStr, currentInstallment: null, totalInstallments: null });
             }
 
             occurrences.forEach(occ => {
@@ -210,7 +249,9 @@ function App() {
         }
         setTransactions(allData);
 
-        const contasResponse = await fetch('contas.csv');
+        const { getAccountsURL } = await import('./config.js');
+        const accountsUrl = getAccountsURL();
+        const contasResponse = await fetch(accountsUrl);
         const contasText = await contasResponse.text();
         const accountsData = parseCSV(contasText);
         setAccounts(accountsData);
@@ -218,7 +259,7 @@ function App() {
         generateTabs(maxDataDate);
 
       } catch (error) {
-        console.error("Error loading CSVs:", error);
+        console.error("Error loading data from Google Sheets:", error);
       }
     };
 

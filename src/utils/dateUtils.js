@@ -19,8 +19,17 @@ export const adjustToBusinessDay = (dateStr) => {
     };
 
     // Keep adding 1 day while it's a non-business day (weekend or holiday)
-    while (isNonBusinessDay(date)) {
+    // Safety counter to prevent infinite loops
+    let counter = 0;
+    const MAX_ITERATIONS = 30; // Max 30 days ahead
+
+    while (isNonBusinessDay(date) && counter < MAX_ITERATIONS) {
         date.setDate(date.getDate() + 1);
+        counter++;
+    }
+
+    if (counter >= MAX_ITERATIONS) {
+        console.error('adjustToBusinessDay exceeded maximum iterations for date:', dateStr);
     }
 
     return date;

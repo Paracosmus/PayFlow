@@ -9,6 +9,12 @@ export const calculateTotals = (payments) => {
     let globalTotal = 0;
 
     payments.forEach(payment => {
+        // Skip if date is invalid
+        if (!payment.date || !(payment.date instanceof Date) || isNaN(payment.date.getTime())) {
+            console.warn('Skipping payment with invalid date:', payment);
+            return;
+        }
+
         const date = new Date(payment.date);
         const value = parseFloat(payment.value || 0);
 
@@ -25,12 +31,16 @@ export const calculateTotals = (payments) => {
         const day = date.getDay();
         const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
         const monday = new Date(date.setDate(diff));
-        const weekKey = monday.toISOString().split('T')[0];
 
-        if (!byWeek[weekKey]) {
-            byWeek[weekKey] = 0;
+        // Validate monday date before calling toISOString
+        if (!isNaN(monday.getTime())) {
+            const weekKey = monday.toISOString().split('T')[0];
+
+            if (!byWeek[weekKey]) {
+                byWeek[weekKey] = 0;
+            }
+            byWeek[weekKey] += value;
         }
-        byWeek[weekKey] += value;
 
         globalTotal += value;
     });
