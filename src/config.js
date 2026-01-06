@@ -28,6 +28,10 @@ export const GOOGLE_SHEETS_CONFIG = {
     bruno: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=318522136&single=true&output=csv',
   },
 
+  // Invoices data - notas fiscais emitidas (receitas, não pagamentos)
+  // TODO: Replace 'YOUR_GID_HERE' with the actual gid from your published Google Sheets page
+  notas: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=522547108&single=true&output=csv',
+
   // Accounts data - should have its own sheet/page in Google Sheets
   accounts: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=1211932616&single=true&output=csv',
 };
@@ -51,4 +55,12 @@ export const getCategoryURL = (categoryName) => {
  */
 export const getAccountsURL = () => {
   return GOOGLE_SHEETS_CONFIG.accounts;
+};
+
+/**
+ * Get the CSV URL for notas (invoices) data
+ * @returns {string} The Google Sheets CSV export URL for notas
+ */
+export const getNotasURL = () => {
+  return GOOGLE_SHEETS_CONFIG.notas;
 };

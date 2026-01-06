@@ -254,6 +254,36 @@
     flex-shrink: 0;
 }
 
+/* ============================================
+   INVOICE ITEM STYLES (Notas Fiscais)
+   ============================================ */
+.payment-item.invoice-item {
+    background: rgba(16, 185, 129, 0.08);
+    border-left: 2px solid #10b981;
+    color: #065f46;
+    cursor: default;
+}
+
+.mobile-payment-item.invoice-item {
+    background: rgba(16, 185, 129, 0.08);
+    border-left-color: #10b981;
+    cursor: default;
+}
+
+.mobile-payment-item.invoice-item:active {
+    transform: none;
+}
+
+.payment-item.invoice-item:hover {
+    filter: none;
+}
+
+.invoice-icon {
+    font-size: 1rem;
+    margin-right: 4px;
+    flex-shrink: 0;
+}
+
 .month-total-footer {
     text-align: right;
     padding: 20px;

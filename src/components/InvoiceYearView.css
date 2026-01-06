@@ -1,0 +1,389 @@
+/* ============================================
+   INVOICE YEAR VIEW STYLES
+   ============================================ */
+.invoice-year-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: auto;
+    background: #f8fafc;
+}
+
+.empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state p {
+    margin: 8px 0;
+    font-size: 1rem;
+}
+
+.empty-hint {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* Year Tabs */
+.year-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.year-tab {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.year-tab:hover {
+    background: #f1f5f9;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.year-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Invoice Table */
+.invoice-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+    margin-bottom: 24px;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.invoice-table thead {
+    background: #f8fafc;
+    border-bottom: 2px solid var(--border);
+}
+
+.invoice-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-main);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.invoice-table th.month-col {
+    position: sticky;
+    left: 0;
+    background: #f8fafc;
+    z-index: 2;
+}
+
+.invoice-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background 0.15s ease;
+}
+
+.invoice-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.invoice-table td {
+    padding: 12px 16px;
+    color: var(--text-main);
+}
+
+.invoice-table td.month-name {
+    font-weight: 500;
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+}
+
+.invoice-table tbody tr:hover td.month-name {
+    background: #f8fafc;
+}
+
+.invoice-table td.provider-value {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+/* Clickable cells */
+.invoice-table td.provider-value.clickable {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.invoice-table td.provider-value.clickable:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.invoice-table td.provider-value.expanded {
+    background: rgba(16, 185, 129, 0.15);
+    font-weight: 700;
+}
+
+.invoice-table .cell-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.invoice-table .invoice-count {
+    font-size: 0.75rem;
+    color: var(--primary);
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+/* Invoice Details Row */
+.invoice-details-row {
+    background: rgba(16, 185, 129, 0.03);
+    animation: expandRow 0.3s ease;
+}
+
+@keyframes expandRow {
+    from {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+.invoice-details-cell {
+    padding: 0 !important;
+}
+
+.invoice-details-content {
+    padding: 16px 20px;
+    border-left: 4px solid var(--primary);
+}
+
+.invoice-details-content h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.95rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.invoice-details-content .invoice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.invoice-details-content .invoice-detail-item {
+    display: grid;
+    grid-template-columns: 90px 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+}
+
+.invoice-details-content .invoice-date {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.invoice-details-content .invoice-client {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.invoice-details-content .invoice-description {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.invoice-details-content .invoice-value {
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.invoice-table tr.total-row {
+    background: rgba(16, 185, 129, 0.05);
+    border-top: 2px solid var(--primary);
+    font-weight: 700;
+}
+
+.invoice-table tr.total-row td.month-name {
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.invoice-table tr.total-row:hover {
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.invoice-table tr.total-row:hover td.month-name {
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.invoice-table td.provider-total {
+    text-align: right;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+}
+
+/* VJ vs BF Comparison */
+.vj-bf-comparison {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+}
+
+.vj-bf-comparison h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+.comparison-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.comparison-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+}
+
+.comparison-card .provider-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparison-card .provider-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-main);
+    font-family: 'Courier New', monospace;
+}
+
+.comparison-result {
+    padding: 12px 16px;
+    background: rgba(16, 185, 129, 0.08);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.comparison-result .highlight-provider {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .invoice-year-view {
+        padding: 12px;
+    }
+
+    .year-tabs {
+        margin-bottom: 16px;
+    }
+
+    .year-tab {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .invoice-table {
+        font-size: 0.85rem;
+    }
+
+    .invoice-table th {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+    }
+
+    .invoice-table td {
+        padding: 10px 12px;
+    }
+
+    .invoice-table td.provider-value,
+    .invoice-table td.provider-total {
+        font-size: 0.85rem;
+    }
+
+    .vj-bf-comparison {
+        padding: 16px;
+    }
+
+    .vj-bf-comparison h3 {
+        font-size: 1rem;
+    }
+
+    .comparison-card .provider-amount {
+        font-size: 1.1rem;
+    }
+
+    .comparison-result {
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra small screens - Stack providers vertically */
+@media (max-width: 480px) {
+    .invoice-table-container {
+        /* Allow horizontal scroll for table */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .invoice-table {
+        min-width: 500px;
+    }
+}

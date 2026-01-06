@@ -294,3 +294,20 @@
         font-size: 0.85rem;
     }
 }
+
+/* Invoice Item Styles */
+.list-payment-item.invoice-item {
+    background: rgba(16, 185, 129, 0.08);
+    border-left-color: #10b981;
+    cursor: default;
+}
+
+.list-payment-item.invoice-item:hover {
+    background: rgba(16, 185, 129, 0.12);
+    transform: translateX(2px);
+}
+
+.list-payment-item .invoice-icon {
+    font-size: 1rem;
+    margin-right: 4px;
+}

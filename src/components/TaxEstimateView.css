@@ -1,0 +1,319 @@
+/* ============================================
+   TAX ESTIMATE VIEW STYLES
+   ============================================ */
+.tax-estimate-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: auto;
+    background: #f8fafc;
+    gap: 24px;
+}
+
+.empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state p {
+    margin: 8px 0;
+    font-size: 1rem;
+}
+
+.empty-hint {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* View Header */
+.view-header {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.view-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
+    color: var(--text-main);
+}
+
+.view-description {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* Month Section */
+.month-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.month-title {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.provider-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 16px;
+}
+
+.no-data {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-style: italic;
+    background: white;
+    border-radius: 12px;
+}
+
+/* Provider Card */
+.provider-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.provider-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.provider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.provider-name {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.expand-btn {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.expand-btn:hover {
+    background: #e2e8f0;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.expand-btn:active {
+    transform: scale(0.95);
+}
+
+/* Provider Summary */
+.provider-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.summary-row.tax-row {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.summary-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.summary-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    font-family: 'Courier New', monospace;
+}
+
+.summary-value.tax-value {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+/* Invoices Detail (Expanded) */
+.invoices-detail {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    animation: expandDown 0.2s ease;
+}
+
+@keyframes expandDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    to {
+        opacity: 1;
+        max-height: 1000px;
+    }
+}
+
+.detail-title {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.invoices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.invoice-detail-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border-left: 3px solid var(--primary);
+    font-size: 0.85rem;
+}
+
+.invoice-date {
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: capitalize;
+}
+
+.invoice-client {
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.invoice-value {
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .tax-estimate-view {
+        padding: 12px;
+        gap: 20px;
+    }
+
+    .view-header {
+        padding: 16px;
+    }
+
+    .view-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .view-description {
+        font-size: 0.85rem;
+    }
+
+    .month-title {
+        font-size: 1.1rem;
+    }
+
+    .provider-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-card {
+        padding: 16px;
+    }
+
+    .provider-name {
+        font-size: 1.1rem;
+    }
+
+    .summary-row {
+        padding: 8px 10px;
+    }
+
+    .summary-label {
+        font-size: 0.8rem;
+    }
+
+    .summary-value {
+        font-size: 1rem;
+    }
+
+    .summary-value.tax-value {
+        font-size: 1.1rem;
+    }
+
+    .invoice-detail-item {
+        grid-template-columns: 70px 1fr;
+        gap: 8px;
+    }
+
+    .invoice-value {
+        grid-column: 2;
+        text-align: right;
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .invoice-detail-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .invoice-value {
+        grid-column: 1;
+        text-align: left;
+    }
+}

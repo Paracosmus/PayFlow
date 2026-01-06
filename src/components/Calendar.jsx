@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getCalendarDays, isHoliday } from '../utils/dateUtils';
 import './Calendar.css';
 
-export default function Calendar({ year, month, transactions, onPaymentClick }) {
+export default function Calendar({ year, month, transactions, invoices = [], onPaymentClick }) {
     const days = getCalendarDays(year, month);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [selectedDay, setSelectedDay] = useState(null);
@@ -65,6 +65,18 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
                 tDate.getDate() === date.getDate() &&
                 tDate.getMonth() === date.getMonth() &&
                 tDate.getFullYear() === date.getFullYear()
+            );
+        });
+    };
+
+    // Helper to find invoices for a day
+    const getInvoicesForDay = (date) => {
+        return invoices.filter(inv => {
+            const invDate = new Date(inv.date);
+            return (
+                invDate.getDate() === date.getDate() &&
+                invDate.getMonth() === date.getMonth() &&
+                invDate.getFullYear() === date.getFullYear()
             );
         });
     };
@@ -153,6 +165,7 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
     // MOBILE LAYOUT
     // ==========================================
     if (isMobile) {
+        const selectedInvoices = selectedDay ? getInvoicesForDay(selectedDay.date) : [];
         const selectedPayments = selectedDay ? getPaymentsForDay(selectedDay.date) : [];
         const selectedDayTotal = selectedPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
@@ -225,9 +238,25 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
                             )}
                         </div>
 
-                        {selectedPayments.length > 0 ? (
+                        {(selectedInvoices.length > 0 || selectedPayments.length > 0) ? (
                             <>
                                 <div className="day-payments-list">
+                                    {/* Invoices first */}
+                                    {selectedInvoices.map(inv => (
+                                        <div
+                                            key={inv.id}
+                                            className="mobile-payment-item invoice-item"
+                                        >
+                                            <div className="mobile-payment-left">
+                                                <span className="invoice-icon">📄</span>
+                                                <span className="mobile-payment-name">{inv.Client}</span>
+                                            </div>
+                                            <span className="mobile-payment-value">
+                                                {formatCurrency(inv.Value)}
+                                            </span>
+                                        </div>
+                                    ))}
+                                    {/* Payments after */}
                                     {selectedPayments.map(p => (
                                         <div
                                             key={p.id}
@@ -250,14 +279,16 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
                                         </div>
                                     ))}
                                 </div>
-                                <div className="day-panel-total">
-                                    <span>Total do dia:</span>
-                                    <strong>{formatCurrency(selectedDayTotal)}</strong>
-                                </div>
+                                {selectedPayments.length > 0 && (
+                                    <div className="day-panel-total">
+                                        <span>Total do dia:</span>
+                                        <strong>{formatCurrency(selectedDayTotal)}</strong>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <div className="day-no-payments">
-                                Nenhum pagamento neste dia
+                                Nenhum pagamento ou nota neste dia
                             </div>
                         )}
                     </div>
@@ -308,6 +339,7 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
                     return (
                         <div key={wIndex} className="calendar-row">
                             {week.map((dayObj, dIndex) => {
+                                const dayInvoices = getInvoicesForDay(dayObj.date);
                                 const payments = getPaymentsForDay(dayObj.date);
                                 const isToday = new Date().toDateString() === dayObj.date.toDateString();
                                 const holidayName = isHoliday(dayObj.date);
@@ -324,6 +356,21 @@ export default function Calendar({ year, month, transactions, onPaymentClick }) 
                                             {holidayName && <span className="holiday-indicator" title={holidayName}>★</span>}
                                         </div>
                                         <div className="payments-list">
+                                            {/* Invoices first */}
+                                            {dayInvoices.map(inv => (
+                                                <div
+                                                    key={inv.id}
+                                                    className="payment-item invoice-item"
+                                                    title={`Nota: ${inv.Client} - ${formatCurrency(inv.Value)}`}
+                                                >
+                                                    <div className="p-left">
+                                                        <span className="invoice-icon">📄</span>
+                                                        <span className="p-name">{inv.Client}</span>
+                                                    </div>
+                                                    <span className="p-val">{formatCurrency(inv.Value)}</span>
+                                                </div>
+                                            ))}
+                                            {/* Payments after */}
                                             {payments.map(p => (
                                                 <div
                                                     key={p.id}

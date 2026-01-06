@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { isHoliday } from '../utils/dateUtils';
 import './ListView.css';
 
-export default function ListView({ year, month, transactions, onPaymentClick }) {
+export default function ListView({ year, month, transactions, invoices = [], onPaymentClick }) {
     // Filter transactions for current month only
     const currentMonthPayments = useMemo(() => {
         return transactions.filter(t => {
@@ -11,18 +11,38 @@ export default function ListView({ year, month, transactions, onPaymentClick }) 
         }).sort((a, b) => new Date(a.date) - new Date(b.date));
     }, [transactions, month, year]);
 
-    // Group payments by date
+    // Filter invoices for current month
+    const currentMonthInvoices = useMemo(() => {
+        return invoices.filter(inv => {
+            const invDate = new Date(inv.date);
+            return invDate.getMonth() === month && invDate.getFullYear() === year;
+        }).sort((a, b) => new Date(a.date) - new Date(b.date));
+    }, [invoices, month, year]);
+
+    // Group payments and invoices by date
     const paymentsByDate = useMemo(() => {
         const grouped = {};
+
+        // Add invoices first
+        currentMonthInvoices.forEach(inv => {
+            const dateKey = new Date(inv.date).toDateString();
+            if (!grouped[dateKey]) {
+                grouped[dateKey] = { date: new Date(inv.date), invoices: [], payments: [] };
+            }
+            grouped[dateKey].invoices.push(inv);
+        });
+
+        // Add payments
         currentMonthPayments.forEach(p => {
             const dateKey = new Date(p.date).toDateString();
             if (!grouped[dateKey]) {
-                grouped[dateKey] = { date: new Date(p.date), payments: [] };
+                grouped[dateKey] = { date: new Date(p.date), invoices: [], payments: [] };
             }
             grouped[dateKey].payments.push(p);
         });
+
         return Object.values(grouped).sort((a, b) => a.date - b.date);
-    }, [currentMonthPayments]);
+    }, [currentMonthPayments, currentMonthInvoices]);
 
     // Group days into weeks (Sunday-Saturday) based on calendar weeks
     const weeklyGroups = useMemo(() => {
@@ -166,6 +186,21 @@ export default function ListView({ year, month, transactions, onPaymentClick }) 
                                     </div>
 
                                     <div className="day-payments">
+                                        {/* Invoices first */}
+                                        {dayData.invoices && dayData.invoices.map(inv => (
+                                            <div
+                                                key={inv.id}
+                                                className="list-payment-item invoice-item"
+                                            >
+                                                <div className="payment-info">
+                                                    <span className="invoice-icon">📄</span>
+                                                    <span className="payment-name">{inv.Client}</span>
+                                                    <span className="payment-category">Nota Fiscal</span>
+                                                </div>
+                                                <span className="payment-value">{formatCurrency(inv.Value)}</span>
+                                            </div>
+                                        ))}
+                                        {/* Payments after */}
                                         {dayData.payments.map(p => (
                                             <div
                                                 key={p.id}
