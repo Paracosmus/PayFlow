@@ -180,17 +180,26 @@ function App() {
                 });
               });
             } else if (file.name === 'recorrentes' || file.name === 'mensais' || file.name === 'lila' || file.name === 'bruno') {
+              // Create reference date from the original CSV entry
+              const referenceDate = new Date(y, m - 1, d);
+
               const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
               years.forEach(year => {
                 for (let month = 1; month <= 12; month++) {
-                  const mStr = String(month).padStart(2, '0');
-                  const dStr = String(d).padStart(2, '0');
-                  const dateStr = `${year}-${mStr}-${dStr}`;
-                  occurrences.push({
-                    dateStr: dateStr,
-                    currentInstallment: null,
-                    totalInstallments: null
-                  });
+                  // Create candidate date for this occurrence
+                  const candidateDate = new Date(year, month - 1, d);
+
+                  // Only add occurrence if candidate date is >= reference date
+                  if (candidateDate >= referenceDate) {
+                    const mStr = String(month).padStart(2, '0');
+                    const dStr = String(d).padStart(2, '0');
+                    const dateStr = `${year}-${mStr}-${dStr}`;
+                    occurrences.push({
+                      dateStr: dateStr,
+                      currentInstallment: null,
+                      totalInstallments: null
+                    });
+                  }
                 }
               });
             } else if (file.name === 'financiamentos' || file.name === 'emprestimos') {
