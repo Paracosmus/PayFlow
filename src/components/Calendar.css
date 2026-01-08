@@ -261,21 +261,35 @@
     background: rgba(16, 185, 129, 0.08);
     border-left: 2px solid #10b981;
     color: #065f46;
-    cursor: default;
+    cursor: pointer; /* Changed from default to pointer */
+}
+
+.payment-item.invoice-item:hover {
+    filter: brightness(0.95); /* Re-enabled hover effect */
 }
 
 .mobile-payment-item.invoice-item {
     background: rgba(16, 185, 129, 0.08);
     border-left-color: #10b981;
-    cursor: default;
+    cursor: pointer; /* Changed from default to pointer */
 }
 
 .mobile-payment-item.invoice-item:active {
-    transform: none;
+    transform: scale(0.98); /* Re-enabled active effect */
 }
 
-.payment-item.invoice-item:hover {
-    filter: none;
+/* Provider badge - similar to installment number badge */
+.p-provider,
+.mobile-payment-provider {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #10b981;
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    margin-right: 6px;
+    flex-shrink: 0;
 }
 
 .invoice-icon {

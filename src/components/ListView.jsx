@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { isHoliday } from '../utils/dateUtils';
+import { getAbbreviatedName } from '../utils/nameUtils';
 import './ListView.css';
 
 export default function ListView({ year, month, transactions, invoices = [], onPaymentClick }) {
@@ -191,10 +192,11 @@ export default function ListView({ year, month, transactions, invoices = [], onP
                                             <div
                                                 key={inv.id}
                                                 className="list-payment-item invoice-item"
+                                                onClick={() => onPaymentClick && onPaymentClick(inv)}
                                             >
                                                 <div className="payment-info">
-                                                    <span className="invoice-icon">📄</span>
-                                                    <span className="payment-name">{inv.Client}</span>
+                                                    <span className="payment-provider">{inv.Provider}</span>
+                                                    <span className="payment-name">{getAbbreviatedName(inv.Client)}</span>
                                                     <span className="payment-category">Nota Fiscal</span>
                                                 </div>
                                                 <span className="payment-value">{formatCurrency(inv.Value)}</span>

@@ -374,6 +374,33 @@
     background: #64748b;
 }
 
+/* Invoice specific styles */
+.detail-card.invoice-detail::before {
+    background: #10b981;
+}
+
+.detail-provider-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #10b981;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    align-self: flex-start;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.detail-value.income-value {
+    color: #10b981;
+}
+
+.detail-category.invoice-category {
+    color: #10b981;
+    opacity: 1;
+}
+
 /* Owner Group Styles */
 .owner-group {
     background: #f8fafc;

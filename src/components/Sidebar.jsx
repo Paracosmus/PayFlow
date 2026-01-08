@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import './Sidebar.css';
 
-export default function Sidebar({ accounts, selectedPayment, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory }) {
+export default function Sidebar({ accounts, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory }) {
     const formatCurrency = (val) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     };
@@ -109,31 +109,50 @@ export default function Sidebar({ accounts, selectedPayment, onBack, isMobile = 
     // Content to render (shared between desktop and mobile)
     const sidebarContent = (
         <>
-            {selectedPayment ? (
+            {selectedPayment || selectedInvoice ? (
                 <div className="details-panel">
                     <button className="back-btn" onClick={onBack}>
                         &larr; Voltar
                     </button>
-                    <div className="detail-card">
-                        <div className={`detail-category category-${selectedPayment.category}`}>
-                            {selectedPayment.category.toUpperCase()}
-                        </div>
-                        <h3 className="detail-title">{selectedPayment.Beneficiary}</h3>
-                        <div className="detail-value">{formatCurrency(selectedPayment.Value)}</div>
-                        <div className="detail-date">Vencimento: {formatDate(selectedPayment.date)}</div>
-
-                        {selectedPayment.totalInstallments && (
-                            <div className="detail-installments">
-                                Parcela {selectedPayment.currentInstallment} de {selectedPayment.totalInstallments}
+                    {selectedPayment && (
+                        <div className="detail-card">
+                            <div className={`detail-category category-${selectedPayment.category}`}>
+                                {selectedPayment.category.toUpperCase()}
                             </div>
-                        )}
+                            <h3 className="detail-title">{selectedPayment.Beneficiary}</h3>
+                            <div className="detail-value">{formatCurrency(selectedPayment.Value)}</div>
+                            <div className="detail-date">Vencimento: {formatDate(selectedPayment.date)}</div>
 
-                        <div className="detail-divider"></div>
-                        <div className="detail-description-label">Descrição</div>
-                        <p className="detail-description">
-                            {selectedPayment.Description || "Sem descrição disponível."}
-                        </p>
-                    </div>
+                            {selectedPayment.totalInstallments && (
+                                <div className="detail-installments">
+                                    Parcela {selectedPayment.currentInstallment} de {selectedPayment.totalInstallments}
+                                </div>
+                            )}
+
+                            <div className="detail-divider"></div>
+                            <div className="detail-description-label">Descrição</div>
+                            <p className="detail-description">
+                                {selectedPayment.Description || "Sem descrição disponível."}
+                            </p>
+                        </div>
+                    )}
+                    {selectedInvoice && (
+                        <div className="detail-card invoice-detail">
+                            <div className="detail-category invoice-category">
+                                NOTA FISCAL
+                            </div>
+                            <div className="detail-provider-badge">{selectedInvoice.Provider}</div>
+                            <h3 className="detail-title">{selectedInvoice.Client}</h3>
+                            <div className="detail-value income-value">{formatCurrency(selectedInvoice.Value)}</div>
+                            <div className="detail-date">Emissão: {formatDate(selectedInvoice.date)}</div>
+
+                            <div className="detail-divider"></div>
+                            <div className="detail-description-label">Descrição</div>
+                            <p className="detail-description">
+                                {selectedInvoice.Description || "Sem descrição disponível."}
+                            </p>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <>

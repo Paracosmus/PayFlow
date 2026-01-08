@@ -299,15 +299,29 @@
 .list-payment-item.invoice-item {
     background: rgba(16, 185, 129, 0.08);
     border-left-color: #10b981;
-    cursor: default;
+    cursor: pointer;
+    /* Changed to pointer for clickability */
 }
 
 .list-payment-item.invoice-item:hover {
     background: rgba(16, 185, 129, 0.12);
-    transform: translateX(2px);
+    transform: translateX(4px);
+    /* Increased transform to match other items */
 }
 
 .list-payment-item .invoice-icon {
     font-size: 1rem;
     margin-right: 4px;
+}
+
+/* Provider badge */
+.payment-provider {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #10b981;
+    color: white;
+    font-weight: 600;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    flex-shrink: 0;
 }

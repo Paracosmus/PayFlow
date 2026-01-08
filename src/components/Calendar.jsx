@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getCalendarDays, isHoliday } from '../utils/dateUtils';
+import { getAbbreviatedName } from '../utils/nameUtils';
 import './Calendar.css';
 
 export default function Calendar({ year, month, transactions, invoices = [], onPaymentClick }) {
@@ -246,10 +247,11 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                         <div
                                             key={inv.id}
                                             className="mobile-payment-item invoice-item"
+                                            onClick={() => onPaymentClick && onPaymentClick(inv)}
                                         >
                                             <div className="mobile-payment-left">
-                                                <span className="invoice-icon">📄</span>
-                                                <span className="mobile-payment-name">{inv.Client}</span>
+                                                <span className="mobile-payment-provider">{inv.Provider}</span>
+                                                <span className="mobile-payment-name">{getAbbreviatedName(inv.Client)}</span>
                                             </div>
                                             <span className="mobile-payment-value">
                                                 {formatCurrency(inv.Value)}
@@ -361,11 +363,15 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                 <div
                                                     key={inv.id}
                                                     className="payment-item invoice-item"
-                                                    title={`Nota: ${inv.Client} - ${formatCurrency(inv.Value)}`}
+                                                    title={`Nota (${inv.Provider}): ${inv.Client} - ${formatCurrency(inv.Value)}`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onPaymentClick && onPaymentClick(inv);
+                                                    }}
                                                 >
                                                     <div className="p-left">
-                                                        <span className="invoice-icon">📄</span>
-                                                        <span className="p-name">{inv.Client}</span>
+                                                        <span className="p-provider">{inv.Provider}</span>
+                                                        <span className="p-name">{getAbbreviatedName(inv.Client)}</span>
                                                     </div>
                                                     <span className="p-val">{formatCurrency(inv.Value)}</span>
                                                 </div>

@@ -361,13 +361,24 @@ function App() {
   };
 
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-  const handlePaymentClick = (payment) => {
-    setSelectedPayment(payment);
+  const handlePaymentClick = (item) => {
+    // Check if it's an invoice (has Provider field) or a payment
+    if (item.Provider) {
+      // It's an invoice
+      setSelectedInvoice(item);
+      setSelectedPayment(null);
+    } else {
+      // It's a payment
+      setSelectedPayment(item);
+      setSelectedInvoice(null);
+    }
   };
 
   const handleClearSelection = () => {
     setSelectedPayment(null);
+    setSelectedInvoice(null);
   };
 
 
@@ -378,6 +389,7 @@ function App() {
         <Sidebar
           accounts={accounts}
           selectedPayment={selectedPayment}
+          selectedInvoice={selectedInvoice}
           onBack={handleClearSelection}
           isMobile={false}
           categories={ALL_CATEGORIES}
