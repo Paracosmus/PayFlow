@@ -166,63 +166,103 @@
 }
 
 .payment-item.category-boletos {
-    background: rgba(59, 130, 246, 0.30);
+    background: rgba(59, 130, 246, 0.1);
     border-left: 2px solid #3b82f6;
     color: #1e40af;
 }
 
+.payment-item.category-boletos:hover {
+    background: rgba(59, 130, 246, 0.30);
+}
+
 .payment-item.category-financiamentos {
-    background: rgba(245, 158, 11, 0.30);
+    background: rgba(245, 158, 11, 0.1);
     border-left: 2px solid #f59e0b;
     color: #92400e;
 }
 
+.payment-item.category-financiamentos:hover {
+    background: rgba(245, 158, 11, 0.30);
+}
+
 .payment-item.category-emprestimos {
-    background: rgba(239, 68, 68, 0.30);
+    background: rgba(239, 68, 68, 0.1);
     border-left: 2px solid #ef4444;
     color: #991b1b;
 }
 
+.payment-item.category-emprestimos:hover {
+    background: rgba(239, 68, 68, 0.30);
+}
+
 .payment-item.category-manual {
-    background: rgba(236, 72, 153, 0.30);
+    background: rgba(236, 72, 153, 0.1);
     border-left: 2px solid #ec4899;
     color: #9d174d;
 }
 
+.payment-item.category-manual:hover {
+    background: rgba(236, 72, 153, 0.30);
+}
+
 .payment-item.category-anuais {
-    background: rgba(139, 92, 246, 0.30);
+    background: rgba(139, 92, 246, 0.1);
     border-left: 2px solid #8b5cf6;
     color: #5b21b6;
 }
 
+.payment-item.category-anuais:hover {
+    background: rgba(139, 92, 246, 0.30);
+}
+
 .payment-item.category-impostos {
-    background: rgba(249, 115, 22, 0.30);
+    background: rgba(249, 115, 22, 0.1);
     border-left: 2px solid #f97316;
     color: #c2410c;
 }
 
+.payment-item.category-impostos:hover {
+    background: rgba(249, 115, 22, 0.30);
+}
+
 .payment-item.category-recorrentes {
-    background: rgba(100, 116, 139, 0.30);
+    background: rgba(100, 116, 139, 0.1);
     border-left: 2px solid #64748b;
     color: #475569;
 }
 
+.payment-item.category-recorrentes:hover {
+    background: rgba(100, 116, 139, 0.30);
+}
+
 .payment-item.category-mensais {
-    background: rgba(6, 182, 212, 0.30);
+    background: rgba(6, 182, 212, 0.1);
     border-left: 2px solid #06b6d4;
     color: #0e7490;
 }
 
+.payment-item.category-mensais:hover {
+    background: rgba(6, 182, 212, 0.30);
+}
+
 .payment-item.category-lila {
-    background: rgba(244, 114, 182, 0.30);
+    background: rgba(244, 114, 182, 0.1);
     border-left: 2px solid #f472b6;
     color: #be185d;
 }
 
+.payment-item.category-lila:hover {
+    background: rgba(244, 114, 182, 0.30);
+}
+
 .payment-item.category-bruno {
-    background: rgba(74, 222, 128, 0.30);
+    background: rgba(74, 222, 128, 0.1);
     border-left: 2px solid #4ade80;
     color: #15803d;
+}
+
+.payment-item.category-bruno:hover {
+    background: rgba(74, 222, 128, 0.30);
 }
 
 .p-left {
