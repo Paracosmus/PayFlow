@@ -7,7 +7,6 @@ import InvoiceYearView from './components/InvoiceYearView';
 import TaxEstimateView from './components/TaxEstimateView';
 import { parseCSV } from './utils/csvParser';
 import { normalizeFixedDate, adjustToBusinessDay } from './utils/dateUtils';
-import { calculateTotals } from './utils/financials';
 import './index.css';
 
 // All categories available in the app
@@ -352,9 +351,32 @@ function App() {
     return disabledCategories.has('notas') ? [] : invoices;
   }, [invoices, disabledCategories]);
 
-  const totals = useMemo(() => {
-    return calculateTotals(filteredTransactions);
-  }, [filteredTransactions]);
+  // Calculate remaining to pay for current month
+  const remainingToPay = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    // Filter transactions for the current displayed month
+    const currentMonthPayments = filteredTransactions.filter(t => {
+      const tDate = new Date(t.date);
+      return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+    });
+
+    // Calculate past days payments (not counting today)
+    const pastDaysPayments = currentMonthPayments.filter(t => {
+      const tDate = new Date(t.date);
+      tDate.setHours(0, 0, 0, 0);
+      return tDate < today;
+    });
+
+    const monthTotal = currentMonthPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    const paidTotal = pastDaysPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+
+    return monthTotal - paidTotal;
+  }, [filteredTransactions, currentDate]);
 
   const handleTabClick = (date) => {
     setCurrentDate(date);
@@ -362,6 +384,7 @@ function App() {
 
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handlePaymentClick = (item) => {
     // Check if it's an invoice (has Provider field) or a payment
@@ -374,11 +397,24 @@ function App() {
       setSelectedPayment(item);
       setSelectedInvoice(null);
     }
+
+    // Open sidebar on mobile when an item is clicked
+    if (isMobile) {
+      setIsSidebarOpen(true);
+    }
   };
 
   const handleClearSelection = () => {
     setSelectedPayment(null);
     setSelectedInvoice(null);
+  };
+
+  const handleOpenSidebar = () => {
+    setIsSidebarOpen(true);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false);
   };
 
 
@@ -388,6 +424,7 @@ function App() {
       {!isMobile && (
         <Sidebar
           accounts={accounts}
+          remainingToPay={remainingToPay}
           selectedPayment={selectedPayment}
           selectedInvoice={selectedInvoice}
           onBack={handleClearSelection}
@@ -518,6 +555,32 @@ function App() {
         }
       </main >
 
+      {/* Mobile Sidebar (Bottom Sheet) */}
+      {isMobile && (
+        <Sidebar
+          accounts={accounts}
+          remainingToPay={remainingToPay}
+          selectedPayment={selectedPayment}
+          selectedInvoice={selectedInvoice}
+          onBack={handleClearSelection}
+          isMobile={true}
+          isOpen={isSidebarOpen}
+          onClose={handleCloseSidebar}
+          categories={ALL_CATEGORIES}
+          disabledCategories={disabledCategories}
+          onToggleCategory={toggleCategory}
+        />
+      )}
+
+      {/* Mobile Floating Action Button to open sidebar */}
+      {isMobile && !isSidebarOpen && (
+        <button className="mobile-fab" onClick={handleOpenSidebar} title="Ver Contas">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor" />
+            <path d="M11.5 8.5H10.5V7H13.5V8.5H12.5V11.5H14.5C15.33 11.5 16 12.17 16 13V15.5C16 16.33 15.33 17 14.5 17H13.5V18.5H10.5V17H11.5V14H9.5C8.67 14 8 13.33 8 12.5V10C8 9.17 8.67 8.5 9.5 8.5H11.5V8.5ZM10 10V12.5H12V10H10ZM12 14V16.5H14V14H12Z" fill="currentColor" />
+          </svg>
+        </button>
+      )}
 
     </div >
   );

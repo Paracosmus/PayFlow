@@ -209,6 +209,28 @@
     color: var(--primary);
 }
 
+.account-box.available-box {
+    border: 1px solid rgba(236, 72, 153, 0.3);
+    background: rgba(236, 72, 153, 0.02);
+}
+
+.available-box .acc-label {
+    color: #ec4899;
+}
+
+.available-box .acc-sub-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.available-box .acc-value {
+    font-size: 1.3rem;
+    color: #db2777;
+    font-weight: 700;
+}
+
 /* Scrollbar styling for accounts list */
 .accounts-grid::-webkit-scrollbar {
     width: 4px;
@@ -472,15 +494,6 @@
     font-size: 0.85rem;
     padding: 2px 0;
     border-radius: 4px;
-    transition: background 0.1s;
-}
-
-.owner-item-row:hover {
-    background: rgba(0, 0, 0, 0.02);
-    padding-left: 4px;
-    padding-right: 4px;
-    margin-left: -4px;
-    margin-right: -4px;
 }
 
 .owner-bank-name {
@@ -590,4 +603,70 @@
     .mobile-sidebar .detail-value {
         font-size: 1.3rem;
     }
+}
+
+/* ============================================
+   MOBILE SIDEBAR BOTTOM SHEET
+   ============================================ */
+.mobile-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.mobile-sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 85vh;
+    background: var(--bg-panel);
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.mobile-sidebar.open {
+    transform: translateY(0);
+}
+
+.mobile-sidebar-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px auto 8px;
+    flex-shrink: 0;
+}
+
+.mobile-sidebar>.brand,
+.mobile-sidebar>.accounts-grid,
+.mobile-sidebar>.category-toggles,
+.mobile-sidebar>.details-panel {
+    padding: 0 20px 20px;
+}
+
+/* Remove overflow from accounts-grid on mobile sidebar */
+.mobile-sidebar .accounts-grid {
+    overflow-y: visible;
+    max-height: none;
 }

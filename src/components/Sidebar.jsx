@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import './Sidebar.css';
 
-export default function Sidebar({ accounts, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory }) {
+export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory }) {
     const formatCurrency = (val) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     };
@@ -16,6 +16,11 @@ export default function Sidebar({ accounts, selectedPayment, selectedInvoice, on
         if (!accounts) return 0;
         return accounts.reduce((acc, item) => acc + (parseFloat(item.value) || 0), 0);
     }, [accounts]);
+
+    // Calculate available balance after paying remaining bills
+    const availableBalance = useMemo(() => {
+        return totalBalance - remainingToPay;
+    }, [totalBalance, remainingToPay]);
 
     const getBankStyle = (bankName) => {
         const bank = bankName ? bankName.toLowerCase() : '';
@@ -185,6 +190,14 @@ export default function Sidebar({ accounts, selectedPayment, selectedInvoice, on
                             <div className="acc-label">Saldo Total Geral</div>
                             <div className="acc-value">
                                 {formatCurrency(totalBalance)}
+                            </div>
+                        </div>
+
+                        <div className="account-box available-box">
+                            <div className="acc-label">Saldo Disponível</div>
+                            <div className="acc-sub-label">Após pagar contas do mês</div>
+                            <div className="acc-value">
+                                {formatCurrency(availableBalance)}
                             </div>
                         </div>
                     </div>
