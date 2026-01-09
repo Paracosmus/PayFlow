@@ -1,0 +1,22 @@
+<IfModule mod_headers.c>
+  # Prevent indexing by search engines
+  Header set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex"
+
+  # Security headers
+  Header set X-Frame-Options "DENY"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "no-referrer"
+
+  # Prevent caching
+  Header set Cache-Control "no-cache, no-store, must-revalidate"
+  Header set Pragma "no-cache"
+  Header set Expires "0"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Block common crawlers and bots by user agent
+  RewriteCond %{HTTP_USER_AGENT} (googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebot|ia_archiver|ahrefsbot|semrushbot|mj12bot|dotbot|screaming|crawler|spider|bot) [NC]
+  RewriteRule .* - [F,L]
+</IfModule>

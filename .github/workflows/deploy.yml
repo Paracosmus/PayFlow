@@ -29,6 +29,11 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+      - name: Copy security files
+        run: |
+          cp public/robots.txt dist/robots.txt
+          cp public/.htaccess dist/.htaccess
+          cp public/_headers dist/_headers
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:

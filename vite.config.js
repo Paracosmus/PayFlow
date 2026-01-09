@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['vite.svg'],
       manifest: {
-        name: 'PayFlow - Calendário de Pagamentos',
+        name: 'PayFlow',
         short_name: 'PayFlow',
-        description: 'Gerencie seus pagamentos mensais com um calendário intuitivo',
+        description: '',
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',
         display: 'standalone',
