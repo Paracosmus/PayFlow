@@ -136,6 +136,7 @@
     flex-direction: column;
     gap: 4px;
     padding-left: 8px;
+    overflow-x: hidden;
 }
 
 .list-payment-item {
@@ -151,58 +152,58 @@
 }
 
 .list-payment-item:hover {
+    filter: brightness(1.15) saturate(1.3);
     transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Category-specific styling */
 .list-payment-item.category-boletos {
-    background: rgba(59, 130, 246, 0.06);
+    background: rgba(59, 130, 246, 0.25);
     border-left-color: #3b82f6;
 }
 
 .list-payment-item.category-financiamentos {
-    background: rgba(245, 158, 11, 0.06);
+    background: rgba(245, 158, 11, 0.25);
     border-left-color: #f59e0b;
 }
 
 .list-payment-item.category-emprestimos {
-    background: rgba(239, 68, 68, 0.06);
+    background: rgba(239, 68, 68, 0.25);
     border-left-color: #ef4444;
 }
 
 .list-payment-item.category-anuais {
-    background: rgba(139, 92, 246, 0.06);
+    background: rgba(139, 92, 246, 0.25);
     border-left-color: #8b5cf6;
 }
 
 .list-payment-item.category-impostos {
-    background: rgba(249, 115, 22, 0.06);
+    background: rgba(249, 115, 22, 0.25);
     border-left-color: #f97316;
 }
 
 .list-payment-item.category-manual {
-    background: rgba(236, 72, 153, 0.06);
+    background: rgba(236, 72, 153, 0.25);
     border-left-color: #ec4899;
 }
 
 .list-payment-item.category-recorrentes {
-    background: rgba(100, 116, 139, 0.06);
+    background: rgba(100, 116, 139, 0.25);
     border-left-color: #64748b;
 }
 
 .list-payment-item.category-mensais {
-    background: rgba(6, 182, 212, 0.06);
+    background: rgba(6, 182, 212, 0.25);
     border-left-color: #06b6d4;
 }
 
 .list-payment-item.category-lila {
-    background: rgba(244, 114, 182, 0.06);
+    background: rgba(244, 114, 182, 0.25);
     border-left-color: #f472b6;
 }
 
 .list-payment-item.category-bruno {
-    background: rgba(74, 222, 128, 0.06);
+    background: rgba(74, 222, 128, 0.25);
     border-left-color: #4ade80;
 }
 
