@@ -19,7 +19,7 @@ const ALL_CATEGORIES = [
   'recorrentes',
   'mensais',
   'lila',
-  'bruno',
+  'proprio',
   'notas' // Invoice category
 ];
 
@@ -31,10 +31,10 @@ function App() {
   const [tabs, setTabs] = useState([]);
 
   // Category visibility state - Set of disabled categories
-  // On mobile, disable 'bruno' and 'lila' by default
+  // On mobile, disable 'proprio' and 'lila' by default
   const [disabledCategories, setDisabledCategories] = useState(() => {
     if (window.innerWidth <= 768) {
-      return new Set(['bruno', 'lila']);
+      return new Set(['proprio', 'lila']);
     }
     return new Set();
   });
@@ -117,7 +117,7 @@ function App() {
           'recorrentes',
           'mensais',
           'lila',
-          'bruno'
+          'proprio'
         ];
 
         const fetchFile = async (name) => {
@@ -186,7 +186,7 @@ function App() {
                   totalInstallments: null
                 });
               });
-            } else if (file.name === 'recorrentes' || file.name === 'mensais' || file.name === 'lila' || file.name === 'bruno') {
+            } else if (file.name === 'recorrentes' || file.name === 'mensais' || file.name === 'lila' || file.name === 'proprio') {
               // Create reference date from the original CSV entry
               const referenceDate = new Date(y, m - 1, d);
 
@@ -240,7 +240,7 @@ function App() {
 
               adjustedDate = adjustToBusinessDay(adjustedDate);
 
-              if (file.name !== 'anuais' && file.name !== 'recorrentes' && file.name !== 'mensais' && file.name !== 'lila' && file.name !== 'bruno') {
+              if (file.name !== 'anuais' && file.name !== 'recorrentes' && file.name !== 'mensais' && file.name !== 'lila' && file.name !== 'proprio') {
                 if (adjustedDate > maxDataDate) {
                   maxDataDate = adjustedDate;
                 }
@@ -374,7 +374,7 @@ function App() {
       'recorrentes': 'Recorrentes',
       'mensais': 'Mensais Fixos',
       'lila': 'Lila',
-      'bruno': 'Bruno'
+      'proprio': 'Próprio'
     };
 
     if (isInvoice) {

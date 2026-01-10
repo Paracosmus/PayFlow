@@ -78,7 +78,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
             'recorrentes': '#64748b',
             'mensais': '#06b6d4',
             'lila': '#f472b6',
-            'bruno': '#4ade80'
+            'proprio': '#4ade80'
         };
         return colors[category] || '#64748b';
     };
@@ -92,7 +92,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
         'recorrentes': 'Recorr.',
         'mensais': 'Mensais',
         'lila': 'Lila',
-        'bruno': 'Bruno'
+        'proprio': 'Próprio'
     };
 
     // Category toggles section

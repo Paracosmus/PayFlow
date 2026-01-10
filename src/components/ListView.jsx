@@ -127,7 +127,7 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         'recorrentes': 'Recorrentes',
         'mensais': 'Mensais Fixos',
         'lila': 'Lila',
-        'bruno': 'Bruno'
+        'proprio': 'Próprio'
     };
 
     const getCategoryColor = (category) => {
@@ -141,7 +141,7 @@ export default function ListView({ year, month, transactions, invoices = [], onP
             'recorrentes': '#64748b',
             'mensais': '#06b6d4',
             'lila': '#f472b6',
-            'bruno': '#4ade80'
+            'proprio': '#4ade80'
         };
         return colors[category] || '#64748b';
     };

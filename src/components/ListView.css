@@ -238,12 +238,12 @@
     background: rgba(244, 114, 182, 0.25);
 }
 
-.list-payment-item.category-bruno {
+.list-payment-item.category-proprio {
     background: rgba(74, 222, 128, 0.06);
     border-left-color: #4ade80;
 }
 
-.list-payment-item.category-bruno:hover {
+.list-payment-item.category-proprio:hover {
     background: rgba(74, 222, 128, 0.25);
 }
 

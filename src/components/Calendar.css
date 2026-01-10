@@ -255,13 +255,13 @@
     background: rgba(244, 114, 182, 0.30);
 }
 
-.payment-item.category-bruno {
+.payment-item.category-proprio {
     background: rgba(74, 222, 128, 0.1);
     border-left: 2px solid #4ade80;
     color: #15803d;
 }
 
-.payment-item.category-bruno:hover {
+.payment-item.category-proprio:hover {
     background: rgba(74, 222, 128, 0.30);
 }
 
@@ -436,7 +436,7 @@
     border: 1px solid rgba(244, 114, 182, 0.2);
 }
 
-.cat-total-badge.category-bruno {
+.cat-total-badge.category-proprio {
     background: rgba(74, 222, 128, 0.1);
     color: #15803d;
     border: 1px solid rgba(74, 222, 128, 0.2);
@@ -731,7 +731,7 @@
     border-left-color: #f472b6;
 }
 
-.mobile-payment-item.category-bruno {
+.mobile-payment-item.category-proprio {
     background: rgba(74, 222, 128, 0.08);
     border-left-color: #4ade80;
 }
