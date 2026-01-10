@@ -52,11 +52,19 @@ function App() {
     });
   };
 
+  // Search handler
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   // Mobile responsive state
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   // View mode state: 'calendar', 'list', 'invoices', 'taxes'
   const [viewMode, setViewMode] = useState('calendar');
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Handle resize for responsive detection
   useEffect(() => {
@@ -341,15 +349,68 @@ function App() {
     loadData();
   }, []);
 
-  // Filter transactions based on disabled categories
-  const filteredTransactions = useMemo(() => {
-    return transactions.filter(t => !disabledCategories.has(t.category));
-  }, [transactions, disabledCategories]);
+  // Helper function to check if an item matches the search query
+  const matchesSearch = (item, query, isInvoice = false) => {
+    if (!query || query.trim() === '') return true;
 
-  // Filter invoices based on disabled categories
+    const searchLower = query.toLowerCase();
+    const formatCurrency = (val) => {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+    };
+    const formatDate = (date) => {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('pt-BR');
+    };
+
+    // Define category names for search
+    const categoryNames = {
+      'boletos': 'Boletos',
+      'financiamentos': 'Financiamentos',
+      'emprestimos': 'Empréstimos',
+      'anuais': 'Anuais',
+      'impostos': 'Impostos',
+      'manual': 'Manual',
+      'recorrentes': 'Recorrentes',
+      'mensais': 'Mensais Fixos',
+      'lila': 'Lila',
+      'bruno': 'Bruno'
+    };
+
+    if (isInvoice) {
+      // Search in invoice fields
+      return (
+        (item.Client && item.Client.toLowerCase().includes(searchLower)) ||
+        (item.Provider && item.Provider.toLowerCase().includes(searchLower)) ||
+        (item.Description && item.Description.toLowerCase().includes(searchLower)) ||
+        (item.Value && formatCurrency(item.Value).toLowerCase().includes(searchLower)) ||
+        (item.date && formatDate(item.date).includes(searchLower))
+      );
+    } else {
+      // Search in transaction fields
+      return (
+        (item.Beneficiary && item.Beneficiary.toLowerCase().includes(searchLower)) ||
+        (item.Description && item.Description.toLowerCase().includes(searchLower)) ||
+        (item.Value && formatCurrency(item.Value).toLowerCase().includes(searchLower)) ||
+        (item.category && item.category.toLowerCase().includes(searchLower)) ||
+        (item.category && categoryNames[item.category] && categoryNames[item.category].toLowerCase().includes(searchLower)) ||
+        (item.date && formatDate(item.date).includes(searchLower))
+      );
+    }
+  };
+
+  // Filter transactions based on disabled categories and search query
+  const filteredTransactions = useMemo(() => {
+    return transactions
+      .filter(t => !disabledCategories.has(t.category))
+      .filter(t => matchesSearch(t, searchQuery, false));
+  }, [transactions, disabledCategories, searchQuery]);
+
+  // Filter invoices based on disabled categories and search query
   const filteredInvoices = useMemo(() => {
-    return disabledCategories.has('notas') ? [] : invoices;
-  }, [invoices, disabledCategories]);
+    if (disabledCategories.has('notas')) return [];
+    return invoices.filter(inv => matchesSearch(inv, searchQuery, true));
+  }, [invoices, disabledCategories, searchQuery]);
 
   // Calculate remaining to pay for current month
   const remainingToPay = useMemo(() => {
@@ -432,6 +493,8 @@ function App() {
           categories={ALL_CATEGORIES}
           disabledCategories={disabledCategories}
           onToggleCategory={toggleCategory}
+          searchQuery={searchQuery}
+          onSearch={handleSearch}
         />
       )}
 
@@ -569,6 +632,8 @@ function App() {
           categories={ALL_CATEGORIES}
           disabledCategories={disabledCategories}
           onToggleCategory={toggleCategory}
+          searchQuery={searchQuery}
+          onSearch={handleSearch}
         />
       )}
 

@@ -1,7 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import './Sidebar.css';
 
-export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory }) {
+export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory, searchQuery = '', onSearch }) {
+    const [localSearchInput, setLocalSearchInput] = useState(searchQuery);
+
     const formatCurrency = (val) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     };
@@ -10,6 +12,22 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
         if (!date) return '';
         const d = new Date(date);
         return d.toLocaleDateString('pt-BR');
+    };
+
+    // Search handlers
+    const handleSearchClick = () => {
+        onSearch && onSearch(localSearchInput);
+    };
+
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSearchClick();
+        }
+    };
+
+    const handleClearSearch = () => {
+        setLocalSearchInput('');
+        onSearch && onSearch('');
     };
 
     const totalBalance = useMemo(() => {
@@ -111,6 +129,44 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
         </div>
     );
 
+    // Search box component
+    const searchBox = (
+        <div className="search-box">
+            <div className="search-label">Pesquisar</div>
+            <div className="search-input-container">
+                <input
+                    type="text"
+                    className="search-input"
+                    placeholder="Buscar entradas..."
+                    value={localSearchInput}
+                    onChange={(e) => setLocalSearchInput(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
+                />
+                {localSearchInput && (
+                    <button
+                        className="search-clear-btn"
+                        onClick={handleClearSearch}
+                        title="Limpar pesquisa"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                )}
+                <button
+                    className="search-btn"
+                    onClick={handleSearchClick}
+                    title="Pesquisar"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    );
+
     // Content to render (shared between desktop and mobile)
     const sidebarContent = (
         <>
@@ -201,6 +257,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             </div>
                         </div>
                     </div>
+                    {searchBox}
                     {categoryToggles}
                 </>
             )}
