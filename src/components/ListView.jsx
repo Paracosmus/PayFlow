@@ -82,7 +82,10 @@ export default function ListView({ year, month, transactions, invoices = [], onP
             }
 
             const week = weekMap.get(weekKey);
-            const dayTotal = dayData.payments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+            // Exclude 'lila' category from day and week totals
+            const dayTotal = dayData.payments
+                .filter(p => p.category !== 'lila')
+                .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
             week.days.push({ ...dayData, total: dayTotal });
             week.total += dayTotal;
         });
@@ -91,8 +94,10 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         return Array.from(weekMap.values()).sort((a, b) => a.startDate - b.startDate);
     }, [paymentsByDate]);
 
-    // Calculate month total
-    const monthTotal = currentMonthPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    // Calculate month total - Exclude 'lila' category from month totals
+    const monthTotal = currentMonthPayments
+        .filter(p => p.category !== 'lila')
+        .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
     // Calculate remaining (unpaid) total
     const today = new Date();
@@ -102,7 +107,9 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         const tDate = new Date(t.date);
         tDate.setHours(0, 0, 0, 0);
         return tDate < today;
-    }).reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    })
+        .filter(p => p.category !== 'lila')
+        .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
     const remainingTotal = monthTotal - paidTotal;
 

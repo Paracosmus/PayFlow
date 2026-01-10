@@ -86,7 +86,12 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
         let total = 0;
         weekDays.forEach(day => {
             const payments = getPaymentsForDay(day.date);
-            payments.forEach(p => total += (parseFloat(p.Value) || 0));
+            // Exclude 'lila' category from week totals
+            payments.forEach(p => {
+                if (p.category !== 'lila') {
+                    total += (parseFloat(p.Value) || 0);
+                }
+            });
         });
         return total;
     };
@@ -120,8 +125,13 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
         return tDate < today;
     });
 
-    const monthTotal = currentMonthPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
-    const paidTotal = pastDaysPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    // Exclude 'lila' category from month totals
+    const monthTotal = currentMonthPayments
+        .filter(p => p.category !== 'lila')
+        .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    const paidTotal = pastDaysPayments
+        .filter(p => p.category !== 'lila')
+        .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
     const remainingTotal = monthTotal - paidTotal;
 
     const categoryNames = {
@@ -168,7 +178,10 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
     if (isMobile) {
         const selectedInvoices = selectedDay ? getInvoicesForDay(selectedDay.date) : [];
         const selectedPayments = selectedDay ? getPaymentsForDay(selectedDay.date) : [];
-        const selectedDayTotal = selectedPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+        // Exclude 'lila' category from day totals
+        const selectedDayTotal = selectedPayments
+            .filter(p => p.category !== 'lila')
+            .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
         return (
             <div className="mobile-calendar">
@@ -402,7 +415,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                         {
                                             payments.length > 0 && (
                                                 <div className="day-total">
-                                                    {formatCurrency(payments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0))}
+                                                    {formatCurrency(payments.filter(p => p.category !== 'lila').reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0))}
                                                 </div>
                                             )
                                         }

@@ -18,9 +18,9 @@ const ALL_CATEGORIES = [
   'impostos',
   'recorrentes',
   'mensais',
-  'lila',
   'proprio',
-  'notas' // Invoice category
+  'notas', // Invoice category
+  'lila',
 ];
 
 function App() {
@@ -31,12 +31,13 @@ function App() {
   const [tabs, setTabs] = useState([]);
 
   // Category visibility state - Set of disabled categories
-  // On mobile, disable 'proprio' and 'lila' by default
+  // 'lila' is always disabled by default (on all devices)
+  // On mobile, 'proprio' is also disabled by default
   const [disabledCategories, setDisabledCategories] = useState(() => {
     if (window.innerWidth <= 768) {
       return new Set(['proprio', 'lila']);
     }
-    return new Set();
+    return new Set(['lila']);
   });
 
   // Toggle category visibility
@@ -433,8 +434,14 @@ function App() {
       return tDate < today;
     });
 
-    const monthTotal = currentMonthPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
-    const paidTotal = pastDaysPayments.reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+
+    // Exclude 'lila' category from month and paid totals
+    const monthTotal = currentMonthPayments
+      .filter(p => p.category !== 'lila')
+      .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
+    const paidTotal = pastDaysPayments
+      .filter(p => p.category !== 'lila')
+      .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
     return monthTotal - paidTotal;
   }, [filteredTransactions, currentDate]);
