@@ -72,13 +72,12 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
             'boletos': '#3b82f6',
             'financiamentos': '#f59e0b',
             'emprestimos': '#ef4444',
-            'anuais': '#8b5cf6',
+            'periodicos': '#8b5cf6',
             'impostos': '#f97316',
             'manual': '#ec4899',
             'recorrentes': '#64748b',
-            'mensais': '#06b6d4',
             'lila': '#f472b6',
-            'proprio': '#4ade80',
+            'individual': '#06b6d4',
             'notas': '#10b981'
         };
         return colors[category] || '#64748b';
@@ -88,12 +87,11 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
         'boletos': 'Boletos',
         'financiamentos': 'Financ.',
         'emprestimos': 'Emprést.',
-        'anuais': 'Anuais',
+        'periodicos': 'Periódicos',
         'impostos': 'Impostos',
         'recorrentes': 'Recorr.',
-        'mensais': 'Mensais',
         'lila': 'Lila',
-        'proprio': 'Próprio',
+        'individual': 'Individual',
         'notas': 'Notas'
     };
 
@@ -189,6 +187,20 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             {selectedPayment.totalInstallments && (
                                 <div className="detail-installments">
                                     Parcela {selectedPayment.currentInstallment} de {selectedPayment.totalInstallments}
+                                </div>
+                            )}
+
+                            {selectedPayment.Interval && (selectedPayment.category === 'periodicos' || selectedPayment.category === 'individual') && (
+                                <div className="detail-interval">
+                                    {(() => {
+                                        const interval = parseInt(selectedPayment.Interval);
+                                        if (interval === 1) return 'Cobrança: Mensal';
+                                        if (interval === 12) return 'Cobrança: Anual';
+                                        if (interval === 6) return 'Cobrança: Semestral';
+                                        if (interval === 3) return 'Cobrança: Trimestral';
+                                        if (interval === 2) return 'Cobrança: Bimestral';
+                                        return `Cobrança: A cada ${interval} meses`;
+                                    })()}
                                 </div>
                             )}
 

@@ -430,6 +430,16 @@
     color: var(--text-muted);
 }
 
+.detail-interval {
+    font-size: 0.8rem;
+    background: #ede9fe;
+    padding: 4px 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+    color: #7c3aed;
+    font-weight: 500;
+}
+
 .detail-divider {
     height: 1px;
     background: var(--border);
@@ -477,7 +487,7 @@
     background: #ef4444;
 }
 
-.detail-card:has(.category-anuais)::before {
+.detail-card:has(.category-periodicos)::before {
     background: #8b5cf6;
 }
 

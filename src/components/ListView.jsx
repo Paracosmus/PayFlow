@@ -128,13 +128,12 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         'boletos': 'Boletos',
         'financiamentos': 'Financiamentos',
         'emprestimos': 'Empréstimos',
-        'anuais': 'Anuais',
+        'periodicos': 'Periódicos',
         'impostos': 'Impostos',
         'manual': 'Manual',
         'recorrentes': 'Recorrentes',
-        'mensais': 'Mensais Fixos',
         'lila': 'Lila',
-        'proprio': 'Próprio'
+        'individual': 'Individual'
     };
 
     const getCategoryColor = (category) => {
@@ -142,13 +141,12 @@ export default function ListView({ year, month, transactions, invoices = [], onP
             'boletos': '#3b82f6',
             'financiamentos': '#f59e0b',
             'emprestimos': '#ef4444',
-            'anuais': '#8b5cf6',
+            'periodicos': '#8b5cf6',
             'impostos': '#f97316',
             'manual': '#ec4899',
             'recorrentes': '#64748b',
-            'mensais': '#06b6d4',
             'lila': '#f472b6',
-            'proprio': '#4ade80'
+            'individual': '#06b6d4'
         };
         return colors[category] || '#64748b';
     };

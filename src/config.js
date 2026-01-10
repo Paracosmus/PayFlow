@@ -20,12 +20,11 @@ export const GOOGLE_SHEETS_CONFIG = {
     boletos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=0&single=true&output=csv',
     financiamentos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=1957297979&single=true&output=csv',
     emprestimos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=788995271&single=true&output=csv',
-    anuais: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=328177311&single=true&output=csv',
+    periodicos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=328177311&single=true&output=csv',
     impostos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=342630177&single=true&output=csv',
     recorrentes: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=2059867118&single=true&output=csv',
-    mensais: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=1779585862&single=true&output=csv',
     lila: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=1007001892&single=true&output=csv',
-    proprio: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=318522136&single=true&output=csv',
+    individual: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=318522136&single=true&output=csv',
   },
 
   // Invoices data - notas fiscais emitidas (receitas, não pagamentos)

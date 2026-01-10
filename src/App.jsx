@@ -14,11 +14,10 @@ const ALL_CATEGORIES = [
   'boletos',
   'financiamentos',
   'emprestimos',
-  'anuais',
+  'periodicos',
   'impostos',
   'recorrentes',
-  'mensais',
-  'proprio',
+  'individual',
   'notas', // Invoice category
   'lila',
 ];
@@ -32,10 +31,10 @@ function App() {
 
   // Category visibility state - Set of disabled categories
   // 'lila' is always disabled by default (on all devices)
-  // On mobile, 'proprio' is also disabled by default
+  // On mobile, 'individual' is also disabled by default
   const [disabledCategories, setDisabledCategories] = useState(() => {
     if (window.innerWidth <= 768) {
-      return new Set(['proprio', 'lila']);
+      return new Set(['individual', 'lila']);
     }
     return new Set(['lila']);
   });
@@ -113,12 +112,11 @@ function App() {
           'boletos',
           'financiamentos',
           'emprestimos',
-          'anuais',
+          'periodicos',
           'impostos',
           'recorrentes',
-          'mensais',
           'lila',
-          'proprio'
+          'individual'
         ];
 
         const fetchFile = async (name) => {
@@ -179,15 +177,42 @@ function App() {
 
             let occurrences = [];
 
-            if (file.name === 'anuais') {
-              [2025, 2026, 2027, 2028, 2029, 2030].forEach(year => {
+            if (file.name === 'periodicos' || file.name === 'individual') {
+              // Both 'periodicos' and 'individual' now use the 'Interval' column
+              // Interval defines the payment frequency in months (1 = monthly, 12 = yearly, etc.)
+              const interval = parseInt(item.Interval) || 1;
+
+              // Validate interval
+              if (interval < 1 || interval > 120) {
+                console.warn(`Skipping item with invalid interval in ${file.name}:`, interval);
+                return;
+              }
+
+              // Create reference date from the original CSV entry
+              const referenceDate = new Date(y, m - 1, d);
+
+              // Generate occurrences from reference date up to 2030
+              const endYear = 2030;
+              const endDate = new Date(endYear, 11, 31); // December 31, 2030
+
+              let currentDate = new Date(referenceDate);
+
+              while (currentDate <= endDate) {
+                const occYear = currentDate.getFullYear();
+                const occMonth = currentDate.getMonth() + 1;
+                const occDay = currentDate.getDate();
+
+                const dateStr = `${occYear}-${String(occMonth).padStart(2, '0')}-${String(occDay).padStart(2, '0')}`;
                 occurrences.push({
-                  dateStr: `${year}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
+                  dateStr: dateStr,
                   currentInstallment: null,
                   totalInstallments: null
                 });
-              });
-            } else if (file.name === 'recorrentes' || file.name === 'mensais' || file.name === 'lila' || file.name === 'proprio') {
+
+                // Move to next occurrence by adding 'interval' months
+                currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
+              }
+            } else if (file.name === 'recorrentes' || file.name === 'lila') {
               // Create reference date from the original CSV entry
               const referenceDate = new Date(y, m - 1, d);
 
@@ -241,7 +266,7 @@ function App() {
 
               adjustedDate = adjustToBusinessDay(adjustedDate);
 
-              if (file.name !== 'anuais' && file.name !== 'recorrentes' && file.name !== 'mensais' && file.name !== 'lila' && file.name !== 'proprio') {
+              if (file.name !== 'periodicos' && file.name !== 'recorrentes' && file.name !== 'lila' && file.name !== 'individual') {
                 if (adjustedDate > maxDataDate) {
                   maxDataDate = adjustedDate;
                 }
@@ -369,13 +394,12 @@ function App() {
       'boletos': 'Boletos',
       'financiamentos': 'Financiamentos',
       'emprestimos': 'Empréstimos',
-      'anuais': 'Anuais',
+      'periodicos': 'Periódicos',
       'impostos': 'Impostos',
       'manual': 'Manual',
       'recorrentes': 'Recorrentes',
-      'mensais': 'Mensais Fixos',
       'lila': 'Lila',
-      'proprio': 'Próprio'
+      'individual': 'Individual'
     };
 
     if (isInvoice) {
