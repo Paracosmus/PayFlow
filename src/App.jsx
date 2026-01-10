@@ -6,7 +6,7 @@ import MonthTabs from './components/MonthTabs';
 import InvoiceYearView from './components/InvoiceYearView';
 import TaxEstimateView from './components/TaxEstimateView';
 import { parseCSV } from './utils/csvParser';
-import { normalizeFixedDate, adjustToBusinessDay } from './utils/dateUtils';
+import { normalizeFixedDate, adjustToNextBusinessDay, adjustToPreviousBusinessDay, keepOriginalDate } from './utils/dateUtils';
 import './index.css';
 
 // All categories available in the app
@@ -264,7 +264,17 @@ function App() {
                 adjustedDate = new Date(occ.dateStr + 'T12:00:00');
               }
 
-              adjustedDate = adjustToBusinessDay(adjustedDate);
+              // Apply date adjustment based on table type
+              if (file.name === 'boletos' || file.name === 'emprestimos' || file.name === 'financiamentos') {
+                // Move to next business day if weekend/holiday
+                adjustedDate = adjustToNextBusinessDay(adjustedDate);
+              } else if (file.name === 'impostos' || file.name === 'recorrentes') {
+                // Move to previous business day if weekend/holiday
+                adjustedDate = adjustToPreviousBusinessDay(adjustedDate);
+              } else if (file.name === 'periodicos' || file.name === 'individual' || file.name === 'lila') {
+                // Keep original date (no adjustment)
+                adjustedDate = keepOriginalDate(adjustedDate);
+              }
 
               if (file.name !== 'periodicos' && file.name !== 'recorrentes' && file.name !== 'lila' && file.name !== 'individual') {
                 if (adjustedDate > maxDataDate) {
@@ -683,3 +693,4 @@ function App() {
 }
 
 export default App;
+

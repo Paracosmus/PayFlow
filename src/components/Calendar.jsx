@@ -100,8 +100,8 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
     };
 
-    const weekDayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-    const weekDayNamesShort = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+    const weekDayNames = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    const weekDayNamesShort = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
 
     // Calculate category totals - STRICTLY for current month
     const currentMonthPayments = transactions.filter(t => {

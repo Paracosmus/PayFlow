@@ -1,14 +1,10 @@
 /**
- * Adjusts a date to the next business day (Monday) if it falls on a weekend.
- * @param {string|Date} dateStr - The input date string (YYYY-MM-DD or similar).
- * @returns {Date} - The adjusted date object.
- */
-/**
  * Adjusts a date to the next business day if it falls on a weekend OR holiday.
+ * Used for: boletos, emprestimos, financiamentos
  * @param {string|Date} dateStr - The input date string (YYYY-MM-DD or similar).
  * @returns {Date} - The adjusted date object.
  */
-export const adjustToBusinessDay = (dateStr) => {
+export const adjustToNextBusinessDay = (dateStr) => {
     // If dateStr is already a Date object, use it; otherwise parse
     let date = (dateStr instanceof Date) ? new Date(dateStr) : new Date(dateStr + 'T12:00:00');
 
@@ -29,11 +25,61 @@ export const adjustToBusinessDay = (dateStr) => {
     }
 
     if (counter >= MAX_ITERATIONS) {
-        console.error('adjustToBusinessDay exceeded maximum iterations for date:', dateStr);
+        console.error('adjustToNextBusinessDay exceeded maximum iterations for date:', dateStr);
     }
 
     return date;
 };
+
+/**
+ * Adjusts a date to the previous business day if it falls on a weekend OR holiday.
+ * Used for: impostos, recorrentes
+ * @param {string|Date} dateStr - The input date string (YYYY-MM-DD or similar).
+ * @returns {Date} - The adjusted date object.
+ */
+export const adjustToPreviousBusinessDay = (dateStr) => {
+    // If dateStr is already a Date object, use it; otherwise parse
+    let date = (dateStr instanceof Date) ? new Date(dateStr) : new Date(dateStr + 'T12:00:00');
+
+    // Helper to check if weekend or holiday
+    const isNonBusinessDay = (d) => {
+        const day = d.getDay();
+        return day === 0 || day === 6 || isHoliday(d) !== null;
+    };
+
+    // Keep subtracting 1 day while it's a non-business day (weekend or holiday)
+    // Safety counter to prevent infinite loops
+    let counter = 0;
+    const MAX_ITERATIONS = 30; // Max 30 days back
+
+    while (isNonBusinessDay(date) && counter < MAX_ITERATIONS) {
+        date.setDate(date.getDate() - 1);
+        counter++;
+    }
+
+    if (counter >= MAX_ITERATIONS) {
+        console.error('adjustToPreviousBusinessDay exceeded maximum iterations for date:', dateStr);
+    }
+
+    return date;
+};
+
+/**
+ * Does not adjust the date - keeps it as is.
+ * Used for: periodicos, individual, lila, notas
+ * @param {string|Date} dateStr - The input date string (YYYY-MM-DD or similar).
+ * @returns {Date} - The date object without adjustment.
+ */
+export const keepOriginalDate = (dateStr) => {
+    // If dateStr is already a Date object, use it; otherwise parse
+    return (dateStr instanceof Date) ? new Date(dateStr) : new Date(dateStr + 'T12:00:00');
+};
+
+/**
+ * Legacy function - now redirects to adjustToNextBusinessDay for backwards compatibility
+ * @deprecated Use adjustToNextBusinessDay instead
+ */
+export const adjustToBusinessDay = adjustToNextBusinessDay;
 
 /**
  * Normalizes a fixed date day.
@@ -90,12 +136,16 @@ export const getCalendarDays = (year, month) => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
 
-    const startDay = firstDay.getDay(); // 0 (Sun) to 6 (Sat)
+    // Get day of week: 0 (Sun) to 6 (Sat)
+    let startDay = firstDay.getDay();
+    // Convert to Monday-based week: Monday = 0, Sunday = 6
+    startDay = (startDay === 0) ? 6 : startDay - 1;
+
     const daysInMonth = lastDay.getDate();
 
     const days = [];
 
-    // Previous month padding
+    // Previous month padding (to start on Monday)
     for (let i = 0; i < startDay; i++) {
         const d = new Date(year, month, 1 - (startDay - i));
         days.push({ date: d, isCurrentMonth: false });
@@ -107,7 +157,7 @@ export const getCalendarDays = (year, month) => {
         days.push({ date: d, isCurrentMonth: true });
     }
 
-    // Next month padding to fill 6 weeks (optional, but standard grid is usually 35 or 42 cells)
+    // Next month padding to fill 6 weeks (42 cells total)
     const remaining = 42 - days.length;
     for (let i = 1; i <= remaining; i++) {
         const d = new Date(year, month + 1, i);

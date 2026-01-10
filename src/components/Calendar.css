@@ -9,7 +9,7 @@
 
 .calendar-header {
     display: grid;
-    grid-template-columns: 0.3fr repeat(5, 1fr) 0.3fr 120px;
+    grid-template-columns: repeat(7, 1fr) 120px;
     gap: 10px;
     margin-bottom: 20px;
     padding-right: 18px;
@@ -34,7 +34,7 @@
 
 .calendar-row {
     display: grid;
-    grid-template-columns: 0.3fr repeat(5, 1fr) 0.3fr 120px;
+    grid-template-columns: repeat(7, 1fr) 120px;
     gap: 10px;
     min-height: 120px;
     min-width: 800px;
@@ -54,21 +54,22 @@
 
 .calendar-cell.weekend {
     background: #f1f5f9;
-    border-color: transparent;
-    opacity: 0.7;
+    border-color: #e2e8f0;
 }
 
 .calendar-cell.weekend .date-number {
-    opacity: 0.5;
+    color: var(--text-muted);
 }
 
-.calendar-cell.weekend:hover {
-    transform: none;
-    box-shadow: none;
-    z-index: 1;
+.calendar-cell:hover.weekend {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
-.calendar-cell:hover:not(.weekend) {
+.calendar-cell:hover:not(.weekend):not(.other-month) {
     background: #ffffff;
     transform: translateY(-2px);
     border-color: var(--primary);
@@ -537,11 +538,11 @@
 }
 
 .mobile-day.weekend {
-    background: #f8fafc;
+    background: #f1f5f9;
 }
 
 .mobile-day.weekend .mobile-day-number {
-    color: #94a3b8;
+    color: var(--text-muted);
 }
 
 .mobile-day.today {
