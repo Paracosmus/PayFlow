@@ -120,8 +120,25 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         categoryTotals[p.category] += (parseFloat(p.Value) || 0);
     });
 
-    const formatCurrency = (val) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+    const formatCurrency = (val, item = null) => {
+        const brlFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+
+        // If item has currency info and it's not BRL, show both currencies
+        if (item && item.currency && item.currency !== 'BRL' && item.originalValue) {
+            let originalFormatted;
+            try {
+                originalFormatted = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: item.currency
+                }).format(item.originalValue);
+            } catch {
+                // Fallback if currency code is not recognized
+                originalFormatted = `${item.currency} ${item.originalValue.toFixed(2)}`;
+            }
+            return `${brlFormatted} (${originalFormatted})`;
+        }
+
+        return brlFormatted;
     };
 
     const categoryNames = {
@@ -204,7 +221,7 @@ export default function ListView({ year, month, transactions, invoices = [], onP
                                                     <span className="payment-name">{getAbbreviatedName(inv.Client)}</span>
                                                     <span className="payment-category">Nota Fiscal</span>
                                                 </div>
-                                                <span className="payment-value">{formatCurrency(inv.Value)}</span>
+                                                <span className="payment-value">{formatCurrency(inv.Value, inv)}</span>
                                             </div>
                                         ))}
                                         {/* Payments after */}
@@ -228,7 +245,7 @@ export default function ListView({ year, month, transactions, invoices = [], onP
                                                     <span className="payment-category">{categoryNames[p.category] || p.category}</span>
                                                 </div>
                                                 {p.category !== 'recorrentes' && (
-                                                    <span className="payment-value">{formatCurrency(p.Value)}</span>
+                                                    <span className="payment-value">{formatCurrency(p.Value, p)}</span>
                                                 )}
                                             </div>
                                         ))}

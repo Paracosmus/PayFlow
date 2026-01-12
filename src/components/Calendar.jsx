@@ -96,8 +96,25 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
         return total;
     };
 
-    const formatCurrency = (val) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+    const formatCurrency = (val, item = null) => {
+        const brlFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+
+        // If item has currency info and it's not BRL, show both currencies
+        if (item && item.currency && item.currency !== 'BRL' && item.originalValue) {
+            let originalFormatted;
+            try {
+                originalFormatted = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: item.currency
+                }).format(item.originalValue);
+            } catch {
+                // Fallback if currency code is not recognized
+                originalFormatted = `${item.currency} ${item.originalValue.toFixed(2)}`;
+            }
+            return `${brlFormatted} (${originalFormatted})`;
+        }
+
+        return brlFormatted;
     };
 
     const weekDayNames = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
@@ -265,7 +282,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                 <span className="mobile-payment-name">{getAbbreviatedName(inv.Client)}</span>
                                             </div>
                                             <span className="mobile-payment-value">
-                                                {formatCurrency(inv.Value)}
+                                                {formatCurrency(inv.Value, inv)}
                                             </span>
                                         </div>
                                     ))}
@@ -286,7 +303,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                             </div>
                                             {p.category !== 'recorrentes' && (
                                                 <span className="mobile-payment-value">
-                                                    {formatCurrency(p.Value)}
+                                                    {formatCurrency(p.Value, p)}
                                                 </span>
                                             )}
                                         </div>
@@ -374,7 +391,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                 <div
                                                     key={inv.id}
                                                     className="payment-item invoice-item"
-                                                    title={`Nota (${inv.Provider}): ${inv.Client} - ${formatCurrency(inv.Value)}`}
+                                                    title={`Nota (${inv.Provider}): ${inv.Client} - ${formatCurrency(inv.Value, inv)}`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onPaymentClick && onPaymentClick(inv);
@@ -384,7 +401,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                         <span className="p-provider">{inv.Provider}</span>
                                                         <span className="p-name">{getAbbreviatedName(inv.Client)}</span>
                                                     </div>
-                                                    <span className="p-val">{formatCurrency(inv.Value)}</span>
+                                                    <span className="p-val">{formatCurrency(inv.Value, inv)}</span>
                                                 </div>
                                             ))}
                                             {/* Payments after */}
@@ -392,7 +409,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                 <div
                                                     key={p.id}
                                                     className={`payment-item category-${p.category}`}
-                                                    title={`${p.Beneficiary}: ${formatCurrency(p.Value)}`}
+                                                    title={`${p.Beneficiary}: ${formatCurrency(p.Value, p)}`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onPaymentClick && onPaymentClick(p);
@@ -405,7 +422,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                         )}
                                                     </div>
                                                     {p.category !== 'recorrentes' && (
-                                                        <span className="p-val">{formatCurrency(p.Value)}</span>
+                                                        <span className="p-val">{formatCurrency(p.Value, p)}</span>
                                                     )}
                                                 </div>
                                             ))}

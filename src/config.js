@@ -33,6 +33,10 @@ export const GOOGLE_SHEETS_CONFIG = {
 
   // Accounts data - should have its own sheet/page in Google Sheets
   accounts: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=1211932616&single=true&output=csv',
+
+  // Fontes (sources) - configuration variables like IOF rate
+  // TODO: Replace 'YOUR_GID_HERE' with the actual gid from your published Google Sheets page
+  fontes: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=1833749130&single=true&output=csv',
 };
 
 /**
@@ -62,4 +66,12 @@ export const getAccountsURL = () => {
  */
 export const getNotasURL = () => {
   return GOOGLE_SHEETS_CONFIG.notas;
+};
+
+/**
+ * Get the CSV URL for fontes (configuration sources) data
+ * @returns {string} The Google Sheets CSV export URL for fontes
+ */
+export const getFontesURL = () => {
+  return GOOGLE_SHEETS_CONFIG.fontes;
 };

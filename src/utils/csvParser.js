@@ -1,7 +1,10 @@
+import { detectCurrency, parseCurrencyValue } from './currencyUtils.js';
+
 /**
  * Parses a CSV string into an array of objects.
  * Supports both comma (Google Sheets) and semicolon (PT-BR) delimiters.
  * Converts "1.234,56" and "1,234.56" number formats to valid JS numbers.
+ * Detects and stores currency information for multi-currency support.
  */
 export const parseCSV = (csvText) => {
     const lines = csvText.trim().split('\n');
@@ -35,27 +38,7 @@ export const parseCSV = (csvText) => {
 
     const headers = parseLine(lines[0]).map(h => h.replace(/^"|"$/g, '').trim());
 
-    // Helper to parse PT-BR currency string to float (1.234,56)
-    const parseBrFloat = (str) => {
-        if (!str) return 0;
-        // Remove quotes if present
-        str = str.replace(/^"|"$/g, '').trim();
-
-        // Check if it's PT-BR format (1.234,56) or US format (1,234.56)
-        const hasBrFormat = str.includes(',') && str.lastIndexOf(',') > str.lastIndexOf('.');
-
-        if (hasBrFormat) {
-            // PT-BR format: remove dots, replace comma with dot
-            const cleanStr = str.replace(/\./g, '').replace(',', '.');
-            return parseFloat(cleanStr) || 0;
-        } else {
-            // US format: remove commas
-            const cleanStr = str.replace(/,/g, '');
-            return parseFloat(cleanStr) || 0;
-        }
-    };
-
-    return lines.slice(1).map((line, i) => {
+    return lines.slice(1).map((line) => {
         if (!line.trim()) return null;
 
         const values = parseLine(line);
@@ -68,7 +51,16 @@ export const parseCSV = (csvText) => {
             val = val.replace(/^"|"$/g, '');
 
             if (header.toLowerCase() === 'value') {
-                obj[header] = parseBrFloat(val);
+                // Detect currency from the value string
+                const { currency, cleanValue } = detectCurrency(val);
+
+                // Parse the numeric value
+                const numericValue = parseCurrencyValue(cleanValue);
+
+                // Store both the value and currency information
+                obj[header] = numericValue;
+                obj.currency = currency; // Store original currency
+                obj.originalValue = numericValue; // Store original value
             } else {
                 obj[header] = val;
             }

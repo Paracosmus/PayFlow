@@ -7,6 +7,7 @@ import InvoiceYearView from './components/InvoiceYearView';
 import TaxEstimateView from './components/TaxEstimateView';
 import { parseCSV } from './utils/csvParser';
 import { normalizeFixedDate, adjustToNextBusinessDay, adjustToPreviousBusinessDay, keepOriginalDate } from './utils/dateUtils';
+import { fetchExchangeRates, convertToBRL, setIOFRate } from './utils/currencyUtils';
 import './index.css';
 
 // All categories available in the app
@@ -28,6 +29,7 @@ function App() {
   const [accounts, setAccounts] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tabs, setTabs] = useState([]);
+  const [exchangeRates, setExchangeRates] = useState(null); // Exchange rates for currency conversion
 
   // Category visibility state - Set of disabled categories
   // 'lila' is always disabled by default (on all devices)
@@ -108,6 +110,45 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Load configuration variables from 'fontes' table first
+        console.log('Loading configuration from fontes...');
+        try {
+          const { getFontesURL } = await import('./config.js');
+          const fontesUrl = getFontesURL();
+
+          // Only try to load if URL is configured (not placeholder)
+          if (fontesUrl && !fontesUrl.includes('YOUR_GID_HERE')) {
+            const fontesResponse = await fetch(fontesUrl);
+            const fontesText = await fontesResponse.text();
+            const fontesData = parseCSV(fontesText);
+
+            // Process fontes data - look for IOF variable
+            fontesData.forEach(item => {
+              if (item.Variable && item.Variable.toUpperCase() === 'IOF') {
+                const iofValue = parseFloat(item.Value);
+                if (!isNaN(iofValue)) {
+                  setIOFRate(iofValue);
+                  console.log(`IOF loaded from fontes: ${(iofValue * 100).toFixed(2)}%`);
+                }
+              }
+              // You can add more variables here in the future
+            });
+
+            console.log('Configuration loaded from fontes');
+          } else {
+            console.log('Fontes URL not configured, using default IOF rate');
+          }
+        } catch (error) {
+          console.warn('Error loading fontes configuration:', error);
+          console.log('Using default IOF rate');
+        }
+
+        // Fetch exchange rates
+        console.log('Fetching exchange rates...');
+        const rates = await fetchExchangeRates();
+        setExchangeRates(rates);
+        console.log('Exchange rates loaded:', rates);
+
         const fileNames = [
           'boletos',
           'financiamentos',
@@ -291,6 +332,13 @@ function App() {
                 if (isDuplicate) return;
               }
 
+              // Convert currency if needed
+              const originalCurrency = item.currency || 'BRL';
+              const originalValue = item.originalValue || item.Value || 0;
+              const valueInBRL = originalCurrency === 'BRL'
+                ? originalValue
+                : convertToBRL(originalValue, originalCurrency, rates);
+
               allData.push({
                 ...item,
                 originalDate: occ.dateStr,
@@ -298,7 +346,11 @@ function App() {
                 category: file.name,
                 id: Math.random().toString(36).substr(2, 9),
                 currentInstallment: occ.currentInstallment,
-                totalInstallments: occ.totalInstallments
+                totalInstallments: occ.totalInstallments,
+                // Currency fields
+                currency: originalCurrency,
+                originalValue: originalValue,
+                Value: valueInBRL // Always store BRL value for calculations
               });
             });
           });
@@ -343,18 +395,19 @@ function App() {
 
               const date = new Date(y, m - 1, d, 12, 0, 0);
 
-              // Handle both 'Value' and 'Valor' column names
-              const rawValue = nota.Value || nota.Valor || '0';
-              const parsedValue = parseFloat(
-                typeof rawValue === 'string'
-                  ? rawValue.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')
-                  : rawValue
-              ) || 0;
+              // Currency is already detected and stored by parseCSV
+              const originalCurrency = nota.currency || 'BRL';
+              const originalValue = nota.originalValue || nota.Value || 0;
+              const valueInBRL = originalCurrency === 'BRL'
+                ? originalValue
+                : convertToBRL(originalValue, originalCurrency, rates);
 
               return {
                 ...nota,
                 date,
-                Value: parsedValue, // Normalize to 'Value'
+                Value: valueInBRL, // Normalize to 'Value' in BRL
+                currency: originalCurrency,
+                originalValue: originalValue,
                 id: Math.random().toString(36).substr(2, 9)
               };
             }).filter(nota => nota !== null);

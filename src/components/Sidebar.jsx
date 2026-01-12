@@ -4,8 +4,25 @@ import './Sidebar.css';
 export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory, searchQuery = '', onSearch }) {
     const [localSearchInput, setLocalSearchInput] = useState(searchQuery);
 
-    const formatCurrency = (val) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    const formatCurrency = (val, item = null) => {
+        const brlFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
+        // If item has currency info and it's not BRL, show both currencies
+        if (item && item.currency && item.currency !== 'BRL' && item.originalValue) {
+            let originalFormatted;
+            try {
+                originalFormatted = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: item.currency
+                }).format(item.originalValue);
+            } catch {
+                // Fallback if currency code is not recognized
+                originalFormatted = `${item.currency} ${item.originalValue.toFixed(2)}`;
+            }
+            return `${brlFormatted} (${originalFormatted})`;
+        }
+
+        return brlFormatted;
     };
 
     const formatDate = (date) => {
@@ -181,7 +198,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                                 {selectedPayment.category.toUpperCase()}
                             </div>
                             <h3 className="detail-title">{selectedPayment.Beneficiary}</h3>
-                            <div className="detail-value">{formatCurrency(selectedPayment.Value)}</div>
+                            <div className="detail-value">{formatCurrency(selectedPayment.Value, selectedPayment)}</div>
                             <div className="detail-date">Vencimento: {formatDate(selectedPayment.date)}</div>
 
                             {selectedPayment.totalInstallments && (
@@ -218,7 +235,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             </div>
                             <div className="detail-provider-badge">{selectedInvoice.Provider}</div>
                             <h3 className="detail-title">{selectedInvoice.Client}</h3>
-                            <div className="detail-value income-value">{formatCurrency(selectedInvoice.Value)}</div>
+                            <div className="detail-value income-value">{formatCurrency(selectedInvoice.Value, selectedInvoice)}</div>
                             <div className="detail-date">Emissão: {formatDate(selectedInvoice.date)}</div>
 
                             <div className="detail-divider"></div>
