@@ -327,7 +327,8 @@ function App() {
                 const isDuplicate = allData.some(existing =>
                   existing.category !== 'recorrentes' &&
                   existing.Beneficiary === item.Beneficiary &&
-                  existing.date.getTime() === adjustedDate.getTime()
+                  existing.date.getMonth() === adjustedDate.getMonth() &&
+                  existing.date.getFullYear() === adjustedDate.getFullYear()
                 );
                 if (isDuplicate) return;
               }
