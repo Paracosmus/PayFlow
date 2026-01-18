@@ -328,6 +328,21 @@
     font-weight: 700;
 }
 
+.available-box.positive {
+    border: 1px solid rgba(52, 211, 153, 0.6);
+    background: rgba(52, 211, 153, 0.08);
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.15);
+}
+
+.available-box.positive .acc-label {
+    color: #059669;
+}
+
+.available-box.positive .acc-value {
+    color: #10b981;
+    text-shadow: 0 0 1px rgba(16, 185, 129, 0.2);
+}
+
 /* Scrollbar styling for accounts list */
 .accounts-grid::-webkit-scrollbar {
     width: 4px;

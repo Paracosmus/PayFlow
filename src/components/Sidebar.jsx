@@ -274,15 +274,15 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                         ))}
 
                         <div className="account-box total-box">
-                            <div className="acc-label">Saldo Total Geral</div>
+                            <div className="acc-label">Soma das contas bancárias</div>
                             <div className="acc-value">
                                 {formatCurrency(totalBalance)}
                             </div>
                         </div>
 
-                        <div className="account-box available-box">
-                            <div className="acc-label">Saldo Disponível</div>
-                            <div className="acc-sub-label">Após pagar contas do mês</div>
+                        <div className={`account-box available-box ${availableBalance > 0 ? 'positive' : ''}`}>
+                            <div className="acc-label">Saldo no Final do Mês</div>
+                            <div className="acc-sub-label">Após pagar todas as contas deste mês</div>
                             <div className="acc-value">
                                 {formatCurrency(availableBalance)}
                             </div>
