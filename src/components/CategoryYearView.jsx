@@ -222,40 +222,39 @@ export default function CategoryYearView({ transactions = [] }) {
                                     <div className="beneficiaries-list">
                                         <h4 className="beneficiaries-title">Beneficiários</h4>
                                         {categoryData.beneficiariesList && categoryData.beneficiariesList.length > 0 ? (
-                                            <div className="beneficiaries-items">
-                                                {categoryData.beneficiariesList.map((beneficiary, idx) => (
-                                                    <div key={idx} className="beneficiary-item">
-                                                        <div className="beneficiary-name" title={beneficiary.name}>
-                                                            {beneficiary.name}
-                                                        </div>
-                                                        <div className="beneficiary-stats">
-                                                            <div className="beneficiary-stat">
-                                                                <span className="beneficiary-stat-label">Total:</span>
-                                                                <span className="beneficiary-stat-value" style={{ color }}>
+                                            <div className="beneficiaries-table-container">
+                                                <table className="beneficiaries-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th className="th-rank">#</th>
+                                                            <th className="th-name">Beneficiário</th>
+                                                            <th className="th-total">Total</th>
+                                                            <th className="th-monthly">Média/Mês</th>
+                                                            <th className="th-daily">Média/Dia</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {categoryData.beneficiariesList.map((beneficiary, idx) => (
+                                                            <tr key={idx}>
+                                                                <td className="td-rank">
+                                                                    <span className="rank-badge">{idx + 1}</span>
+                                                                </td>
+                                                                <td className="td-name">
+                                                                    <div className="name-text" title={beneficiary.name}>{beneficiary.name}</div>
+                                                                </td>
+                                                                <td className="td-total" style={{ color }}>
                                                                     {formatCurrency(beneficiary.total)}
-                                                                </span>
-                                                            </div>
-                                                            <div className="beneficiary-stat">
-                                                                <span className="beneficiary-stat-label">Mensal:</span>
-                                                                <span className="beneficiary-stat-value">
+                                                                </td>
+                                                                <td className="td-monthly">
                                                                     {formatCurrency(beneficiary.monthlyAvg)}
-                                                                </span>
-                                                            </div>
-                                                            <div className="beneficiary-stat">
-                                                                <span className="beneficiary-stat-label">Semanal:</span>
-                                                                <span className="beneficiary-stat-value">
-                                                                    {formatCurrency(beneficiary.weeklyAvg)}
-                                                                </span>
-                                                            </div>
-                                                            <div className="beneficiary-stat">
-                                                                <span className="beneficiary-stat-label">Diária:</span>
-                                                                <span className="beneficiary-stat-value">
+                                                                </td>
+                                                                <td className="td-daily">
                                                                     {formatCurrency(beneficiary.dailyAvg)}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         ) : (
                                             <p className="no-beneficiaries">Nenhum beneficiário encontrado</p>

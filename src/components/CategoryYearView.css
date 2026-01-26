@@ -64,12 +64,26 @@
 
 /* Category Section */
 .category-section {
-    background: var(--card-bg);
+    background: white;
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.2s ease;
+}
+
+/* ... */
+
+.name-text {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.9rem;
+    max-width: 180px;
+    /* Limit width to force ellipsis */
+    display: block;
 }
 
 .category-section:hover {
@@ -187,63 +201,138 @@
     padding-bottom: 0.5rem;
 }
 
-.beneficiaries-items {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+/* Beneficiaries Table Styles */
+.beneficiaries-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-.beneficiary-item {
-    padding: 1rem;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.beneficiary-item:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transform: translateX(2px);
-}
-
-.beneficiary-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.75rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.beneficiary-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.beneficiary-stat {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.beneficiaries-table {
+    width: 100%;
+    border-collapse: collapse;
     font-size: 0.85rem;
 }
 
-.beneficiary-stat-label {
+.beneficiaries-table th {
+    text-align: left;
+    padding: 10px 8px;
+    font-weight: 600;
     color: var(--text-secondary);
-    font-weight: 500;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.beneficiary-stat-value {
+.beneficiaries-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.beneficiaries-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Columns specific styles */
+.th-rank,
+.td-rank {
+    width: 40px;
+    text-align: center !important;
+    padding-left: 0 !important;
+    padding-right: 4px !important;
+}
+
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--bg);
+    border-radius: 50%;
+    font-size: 0.7rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.beneficiaries-table tr:nth-child(1) .rank-badge {
+    background: #FEF3C7;
+    /* Gold 100 */
+    color: #B45309;
+    /* Amber 700 */
+    border-color: #FCD34D;
+    /* Amber 300 */
+}
+
+.beneficiaries-table tr:nth-child(2) .rank-badge {
+    background: #F3F4F6;
+    /* Gray 100 */
+    color: #4B5563;
+    /* Gray 600 */
+    border-color: #D1D5DB;
+    /* Gray 300 */
+}
+
+.beneficiaries-table tr:nth-child(3) .rank-badge {
+    background: #FFEDD5;
+    /* Orange 100 */
+    color: #C2410C;
+    /* Orange 700 */
+    border-color: #FDBA74;
+    /* Orange 300 */
+}
+
+.th-name,
+.td-name {
+    text-align: left;
+}
+
+
+
+.th-total,
+.td-total {
+    text-align: right !important;
+}
+
+.td-total {
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.th-monthly,
+.td-monthly {
+    text-align: right !important;
+    color: var(--text-secondary);
+}
+
+.td-monthly {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.th-daily,
+.td-daily {
+    text-align: right !important;
+    color: var(--text-secondary);
+}
+
+.td-daily {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
 .no-beneficiaries {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 0.9rem;
 }
 
 /* Scrollbar styling for beneficiaries list */
@@ -359,18 +448,6 @@
     .beneficiaries-title {
         font-size: 0.9rem;
     }
-
-    .beneficiary-item {
-        padding: 0.875rem;
-    }
-
-    .beneficiary-name {
-        font-size: 0.875rem;
-    }
-
-    .beneficiary-stat {
-        font-size: 0.8rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -403,23 +480,22 @@
 
     .beneficiaries-list {
         max-height: 250px;
-        padding: 0.875rem;
+        padding: 0.5rem;
     }
 
-    .beneficiary-item {
-        padding: 0.75rem;
+    .th-monthly,
+    .td-monthly,
+    .th-daily,
+    .td-daily {
+        display: none;
     }
 
-    .beneficiary-name {
+    .name-text {
+        max-width: 110px;
         font-size: 0.8rem;
     }
 
-    .beneficiary-stat {
-        font-size: 0.75rem;
-    }
-
-    .beneficiary-stat-label,
-    .beneficiary-stat-value {
-        font-size: 0.75rem;
+    .td-total {
+        font-size: 0.85rem;
     }
 }
