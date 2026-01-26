@@ -622,34 +622,23 @@ function App() {
     return invoices.filter(inv => matchesSearch(inv, searchQuery, true));
   }, [invoices, disabledCategories, searchQuery]);
 
-  // Calculate remaining to pay for current month
+  // Calculate remaining to pay from today until the end of the selected month
   const remainingToPay = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
+    // End of the selected month
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    endOfMonth.setHours(23, 59, 59, 999);
 
-    // Filter transactions for the current displayed month
-    const currentMonthPayments = filteredTransactions.filter(t => {
+    // Filter transactions: date >= today AND date <= endOfMonth
+    return filteredTransactions.reduce((acc, t) => {
       const tDate = new Date(t.date);
-      return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
-    });
-
-    // Calculate past days payments (not counting today)
-    const pastDaysPayments = currentMonthPayments.filter(t => {
-      const tDate = new Date(t.date);
-      tDate.setHours(0, 0, 0, 0);
-      return tDate < today;
-    });
-
-
-    const monthTotal = currentMonthPayments
-      .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
-    const paidTotal = pastDaysPayments
-      .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
-
-    return monthTotal - paidTotal;
+      if (tDate >= today && tDate <= endOfMonth) {
+        return acc + (parseFloat(t.Value) || 0);
+      }
+      return acc;
+    }, 0);
   }, [filteredTransactions, currentDate]);
 
   const handleTabClick = (date) => {
