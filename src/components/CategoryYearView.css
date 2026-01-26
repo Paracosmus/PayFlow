@@ -55,6 +55,88 @@
     font-size: 1.1rem;
 }
 
+/* Overall Charts Section */
+.overall-charts-section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 2rem 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Chart Containers */
+.chart-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.chart-container:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.chart-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.chart-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.chart-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Line Chart */
+.chart-line {
+    margin-bottom: 2rem;
+}
+
+.chart-line .chart-wrapper {
+    height: 400px;
+    position: relative;
+}
+
+/* Pie Charts Grid */
+.pie-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.chart-pie .chart-wrapper {
+    height: 350px;
+    position: relative;
+}
+
 /* Categories Container */
 .categories-container {
     display: flex;
@@ -131,17 +213,18 @@
     color: var(--text-primary);
 }
 
-/* Category Content - Two Column Layout */
+/* Category Content - Three Column Layout */
 .category-content {
-    display: flex;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
 }
 
-/* Months Grid - 2/3 width */
+/* Months Grid - Column 1 */
 .months-grid {
-    flex: 2;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1rem;
 }
 
@@ -177,13 +260,12 @@
     font-weight: 700;
 }
 
-/* Beneficiaries List - 1/3 width */
+/* Beneficiaries List - Column 2 */
 .beneficiaries-list {
-    flex: 1;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 1.25rem;
+    padding: 1.5rem;
     max-height: 600px;
     overflow-y: auto;
     display: flex;
@@ -199,6 +281,46 @@
     letter-spacing: 0.5px;
     border-bottom: 2px solid var(--border);
     padding-bottom: 0.5rem;
+}
+
+/* Beneficiaries Chart Column - Column 3 */
+.beneficiaries-chart-column {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.beneficiaries-chart-column .beneficiaries-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.5rem;
+    text-align: center;
+}
+
+.beneficiaries-chart-column .category-beneficiaries-chart {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.beneficiaries-chart-column .chart-wrapper-small {
+    height: 100%;
+    min-height: 350px;
+    width: 100%;
 }
 
 /* Beneficiaries Table Styles */
@@ -365,11 +487,38 @@
 
     /* Stack columns vertically on tablets */
     .category-content {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .months-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .beneficiaries-chart-column {
+        max-height: 450px;
+    }
+
+    .beneficiaries-chart-column .chart-wrapper-small {
+        min-height: 300px;
     }
 
     .beneficiaries-list {
         max-height: 400px;
+    }
+
+    /* Stack pie charts vertically */
+    .pie-charts-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .chart-line .chart-wrapper {
+        height: 350px;
+    }
+
+    .chart-pie .chart-wrapper {
+        height: 320px;
     }
 }
 
@@ -418,13 +567,27 @@
 
     /* Stack columns vertically */
     .category-content {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
 
     .months-grid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 0.75rem;
+    }
+
+    .beneficiaries-chart-column {
+        max-height: 400px;
+        padding: 1rem;
+    }
+
+    .beneficiaries-chart-column .chart-wrapper-small {
+        min-height: 250px;
+    }
+
+    .beneficiaries-list {
+        max-height: 300px;
+        padding: 1rem;
     }
 
     .month-box {
@@ -440,13 +603,35 @@
         font-size: 1rem;
     }
 
-    .beneficiaries-list {
-        max-height: 300px;
-        padding: 1rem;
-    }
-
     .beneficiaries-title {
         font-size: 0.9rem;
+    }
+
+    /* Charts responsive */
+    .overall-charts-section {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .chart-line .chart-wrapper {
+        height: 300px;
+    }
+
+    .chart-pie .chart-wrapper {
+        height: 280px;
+    }
+
+    .chart-title {
+        font-size: 1.1rem;
+    }
+
+    .chart-subtitle {
+        font-size: 0.85rem;
     }
 }
 
@@ -478,6 +663,15 @@
         font-size: 1rem;
     }
 
+    .beneficiaries-chart-column {
+        max-height: 350px;
+        padding: 0.75rem;
+    }
+
+    .beneficiaries-chart-column .chart-wrapper-small {
+        min-height: 220px;
+    }
+
     .beneficiaries-list {
         max-height: 250px;
         padding: 0.5rem;
@@ -497,5 +691,36 @@
 
     .td-total {
         font-size: 0.85rem;
+    }
+
+    /* Charts for very small screens */
+    .overall-charts-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .chart-container {
+        padding: 1rem;
+    }
+
+    .chart-line .chart-wrapper {
+        height: 250px;
+    }
+
+    .chart-pie .chart-wrapper {
+        height: 250px;
+    }
+
+    .chart-title {
+        font-size: 1rem;
+    }
+
+    .chart-subtitle {
+        font-size: 0.8rem;
     }
 }
