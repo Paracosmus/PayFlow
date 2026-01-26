@@ -12,19 +12,7 @@ export const getInvoicesByProvider = (invoices, provider) => {
     return invoices.filter(inv => inv.Provider === provider);
 };
 
-/**
- * Filter invoices by specific month and year
- * @param {Array} invoices - Array of invoice objects
- * @param {number} year - Year to filter by
- * @param {number} month - Month to filter by (0-11, JavaScript format)
- * @returns {Array} Filtered invoices
- */
-export const getInvoicesByMonth = (invoices, year, month) => {
-    return invoices.filter(inv => {
-        const invDate = new Date(inv.date);
-        return invDate.getFullYear() === year && invDate.getMonth() === month;
-    });
-};
+
 
 /**
  * Filter invoices by year
@@ -97,66 +85,7 @@ export const groupInvoicesByProviderAndMonth = (invoices, year) => {
     return grouped;
 };
 
-/**
- * Calculate sum of invoices for the last 12 months, excluding the target month
- * @param {Array} invoices - Array of invoice objects
- * @param {number} targetYear - Target year
- * @param {number} targetMonth - Target month (0-11)
- * @param {string} provider - Provider name
- * @returns {number} Sum of last 12 months
- */
-export const calculate12MonthSum = (invoices, targetYear, targetMonth, provider) => {
-    const providerInvoices = getInvoicesByProvider(invoices, provider);
 
-    // Calculate date range: 12 months BEFORE the target month (excluding target month)
-    // For example, if target is Jan 2026 (month=0, year=2026):
-    // - End date: Dec 2025 (last day)
-    // - Start date: Jan 2025 (first day)
-    const endDate = new Date(targetYear, targetMonth, 0); // Last day of previous month
-    const startDate = new Date(targetYear, targetMonth - 12, 1); // First day of 12 months before
-
-    const filteredInvoices = providerInvoices.filter(inv => {
-        const invDate = new Date(inv.date);
-        // Check if invoice date is within the range (inclusive)
-        return invDate >= startDate && invDate <= endDate;
-    });
-
-    return calculateInvoiceTotal(filteredInvoices);
-};
-
-/**
- * Calculate estimated tax using Simples Nacional (Anexo III - Serviços)
- * Progressive rates based on 12-month revenue (RBT12)
- * @param {number} rbt12 - Receita Bruta Total dos últimos 12 meses
- * @returns {number} Tax amount based on Simples Nacional table
- */
-export const getTaxEstimate = (rbt12) => {
-    // Simples Nacional - Anexo III (2024 values)
-    // Faixas de faturamento anual
-    const brackets = [
-        { limit: 180000, rate: 0.06, deduction: 0 },
-        { limit: 360000, rate: 0.112, deduction: 9360 },
-        { limit: 720000, rate: 0.135, deduction: 17640 },
-        { limit: 1800000, rate: 0.16, deduction: 35640 },
-        { limit: 3600000, rate: 0.21, deduction: 125640 },
-        { limit: Infinity, rate: 0.33, deduction: 648000 }
-    ];
-
-    // Find the applicable bracket
-    let applicableBracket = brackets[0];
-    for (const bracket of brackets) {
-        if (rbt12 <= bracket.limit) {
-            applicableBracket = bracket;
-            break;
-        }
-    }
-
-    // Calculate effective rate: (RBT12 × Alíquota) - Parcela a Deduzir
-    const totalTax = (rbt12 * applicableBracket.rate) - applicableBracket.deduction;
-
-    // Monthly tax estimate (divide by 12)
-    return totalTax / 12;
-};
 
 /**
  * Compare two providers for a specific year

@@ -4,7 +4,7 @@ import Calendar from './components/Calendar';
 import ListView from './components/ListView';
 import MonthTabs from './components/MonthTabs';
 import InvoiceYearView from './components/InvoiceYearView';
-import TaxEstimateView from './components/TaxEstimateView';
+
 import CategoryYearView from './components/CategoryYearView';
 import { parseCSV } from './utils/csvParser';
 import { normalizeFixedDate, adjustToNextBusinessDay, adjustToPreviousBusinessDay, keepOriginalDate } from './utils/dateUtils';
@@ -64,7 +64,7 @@ function App() {
   // Mobile responsive state
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // View mode state: 'calendar', 'list', 'invoices', 'taxes', 'categories'
+  // View mode state: 'calendar', 'list', 'invoices', 'categories'
   const [viewMode, setViewMode] = useState('calendar');
 
   // Search state
@@ -762,17 +762,7 @@ function App() {
                 </svg>
                 <span>Notas</span>
               </button>
-              <button
-                className={`view-mode-btn ${viewMode === 'taxes' ? 'active' : ''}`}
-                onClick={() => setViewMode('taxes')}
-                title="Impostos Estimados"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <span>Impostos</span>
-              </button>
+
               <button
                 className={`view-mode-btn ${viewMode === 'categories' ? 'active' : ''}`}
                 onClick={() => setViewMode('categories')}
@@ -811,12 +801,7 @@ function App() {
             >
               📄 Notas
             </button>
-            <button
-              className={`mobile-view-tab ${viewMode === 'taxes' ? 'active' : ''}`}
-              onClick={() => setViewMode('taxes')}
-            >
-              💰 Impostos
-            </button>
+
             <button
               className={`mobile-view-tab ${viewMode === 'categories' ? 'active' : ''}`}
               onClick={() => setViewMode('categories')}
@@ -844,8 +829,6 @@ function App() {
           />
         ) : viewMode === 'invoices' ? (
           <InvoiceYearView invoices={invoices} providerRates={providerRates} />
-        ) : viewMode === 'taxes' ? (
-          <TaxEstimateView invoices={invoices} />
         ) : (
           <CategoryYearView transactions={filteredTransactions} />
         )
