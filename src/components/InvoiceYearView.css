@@ -348,6 +348,79 @@
     font-size: 1.1rem;
 }
 
+/* Comparison Tabs */
+.vj-bf-comparison-container {
+    margin-bottom: 24px;
+}
+
+.comparison-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.comparison-tab {
+    flex: 1;
+    padding: 10px 16px;
+    border: 2px solid #d1fae5;
+    /* Emerald 100 */
+    border-radius: 8px 8px 0 0;
+    background: white;
+    color: #059669;
+    /* Emerald 600 */
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.comparison-tab:hover {
+    background: #ecfdf5;
+    /* Emerald 50 */
+    border-color: #10b981;
+    /* Emerald 500 */
+}
+
+.comparison-tab.active {
+    background: #10b981;
+    /* Emerald 500 */
+    color: white;
+    border-color: #10b981;
+    /* Emerald 500 */
+}
+
+/* Highlight for new invoices (blue tones) */
+.detail-item.is-new {
+    background-color: #dbeafe !important;
+    /* Blue 100 */
+    border-left-color: #3b82f6 !important;
+    /* Blue 500 */
+}
+
+.detail-item.is-new .detail-value {
+    color: #1e40af;
+    /* Blue 800 */
+}
+
+/* Highlight for removed invoices (pink/rose tones) */
+.detail-item.is-removed {
+    background-color: #fce7f3 !important;
+    /* Pink 100 */
+    border-left-color: #ec4899 !important;
+    /* Pink 500 */
+    opacity: 0.85;
+}
+
+.detail-item.is-removed .detail-value {
+    color: #9f1239;
+    /* Rose 800 */
+}
+
+.detail-item.is-removed .detail-client,
+.detail-item.is-removed .detail-date {
+    opacity: 0.7;
+}
+
 /* Last 12 Months Comparison - Highlighted */
 .vj-bf-comparison.last-12-months {
     background: #ffffff;
@@ -562,6 +635,15 @@
 
     .comparison-result {
         font-size: 0.9rem;
+    }
+
+    .comparison-tab {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    .details-columns {
+        gap: 12px;
     }
 }
 

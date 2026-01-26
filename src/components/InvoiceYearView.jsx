@@ -6,6 +6,7 @@ export default function InvoiceYearView({ invoices, providerRates = { VJ: 0.14, 
     const availableYears = useMemo(() => getAvailableYears(invoices), [invoices]);
     const [selectedYear, setSelectedYear] = useState(availableYears[0] || new Date().getFullYear());
     const [expandedCells, setExpandedCells] = useState(new Set()); // Track multiple expanded cells
+    const [comparisonPeriod, setComparisonPeriod] = useState('previous12'); // 'previous12' or 'current11'
 
     const formatCurrency = (val) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
@@ -119,6 +120,75 @@ export default function InvoiceYearView({ invoices, providerRates = { VJ: 0.14, 
         return null;
     }, [invoices, providerRates]);
 
+    // Compare VJ and BF for current month + 11 previous months (rolling)
+    const vjBfCurrent11MonthsComparison = useMemo(() => {
+        const allProviders = [...new Set(invoices.map(inv => inv.Provider))];
+
+        if (allProviders.includes('VJ') && allProviders.includes('BF')) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth();
+
+            // Start Date: 1st day of the 11th month ago
+            // Example: If today is Jan 2026 (month 0), we want Feb 2025.
+            const startDate = new Date(currentYear, currentMonth - 11, 1, 0, 0, 0, 0);
+
+            // End Date: Last day of the current month
+            const endDate = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59, 999);
+
+            // Start of Current Month (for the percentage calculation)
+            const startOfCurrentMonth = new Date(currentYear, currentMonth, 1, 0, 0, 0, 0);
+
+            // Filter invoices within this range (current month + 11 previous)
+            const current11MonthsInvoices = invoices.filter(inv => {
+                const invDate = new Date(inv.date);
+                return invDate >= startDate && invDate <= endDate;
+            });
+
+            // Calculate totals for each provider
+            const vjTotal = current11MonthsInvoices
+                .filter(inv => inv.Provider === 'VJ')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
+            const bfTotal = current11MonthsInvoices
+                .filter(inv => inv.Provider === 'BF')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
+            // Calculate totals for CURRENT MONTH ONLY (for the percentage estimate)
+            const currentMonthInvoices = invoices.filter(inv => {
+                const invDate = new Date(inv.date);
+                return invDate >= startOfCurrentMonth && invDate <= endDate;
+            });
+
+            const vjTotalCurrentMonth = currentMonthInvoices
+                .filter(inv => inv.Provider === 'VJ')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
+            const bfTotalCurrentMonth = currentMonthInvoices
+                .filter(inv => inv.Provider === 'BF')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
+            const difference = Math.abs(vjTotal - bfTotal);
+            const higher = vjTotal > bfTotal ? 'VJ' : (bfTotal > vjTotal ? 'BF' : 'equal');
+
+            // Sort invoices by date descending for display
+            const sortedInvoices = [...current11MonthsInvoices]
+                .filter(inv => inv.Provider === 'VJ' || inv.Provider === 'BF')
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            return {
+                VJ: vjTotal,
+                BF: bfTotal,
+                vjEstimate: vjTotalCurrentMonth * providerRates.VJ,
+                bfEstimate: bfTotalCurrentMonth * providerRates.BF,
+                difference,
+                higher,
+                invoices: sortedInvoices
+            };
+        }
+        return null;
+    }, [invoices, providerRates]);
+
     // Get invoices for a specific month and provider
     const getMonthInvoices = (provider, monthIndex) => {
         return invoices.filter(inv => {
@@ -161,83 +231,174 @@ export default function InvoiceYearView({ invoices, providerRates = { VJ: 0.14, 
 
     return (
         <div className="invoice-year-view">
-            {/* VJ vs BF Comparison - Last 12 Months */}
-            {vjBfLast12MonthsComparison && (
-                <div
-                    className={`vj-bf-comparison last-12-months ${isComparisonExpanded ? 'expanded' : ''}`}
-                    onClick={() => setIsComparisonExpanded(!isComparisonExpanded)}
-                    title="Clique para ver detalhes"
-                    role="button"
-                    tabIndex={0}
-                >
-                    <h3>Comparação VJ x BF nos 12 meses anteriores</h3>
-                    <div className="comparison-cards">
-                        <div className="comparison-card">
-                            <span className="provider-name">VJ</span>
-                            <span className="provider-amount">{formatCurrency(vjBfLast12MonthsComparison.VJ)}</span>
-                            <span className="provider-percentage" title={`Estimativa baseada em ${(providerRates.VJ * 100).toLocaleString('pt-BR')}% do mês anterior`}>
-                                (~{(providerRates.VJ * 100).toLocaleString('pt-BR')}% mês ant.: ~{formatCurrency(vjBfLast12MonthsComparison.vjEstimate)})
-                            </span>
-                        </div>
-                        <div className="comparison-card">
-                            <span className="provider-name">BF</span>
-                            <span className="provider-amount">{formatCurrency(vjBfLast12MonthsComparison.BF)}</span>
-                            <span className="provider-percentage" title={`Estimativa baseada em ${(providerRates.BF * 100).toLocaleString('pt-BR')}% do mês anterior`}>
-                                (~{(providerRates.BF * 100).toLocaleString('pt-BR')}% mês ant.: ~{formatCurrency(vjBfLast12MonthsComparison.bfEstimate)})
-                            </span>
-                        </div>
-                    </div>
-                    <div className="comparison-result">
-                        {vjBfLast12MonthsComparison.higher !== 'equal' ? (
-                            <>
-                                <span className="highlight-provider">{vjBfLast12MonthsComparison.higher}</span> emitiu <strong>{formatCurrency(vjBfLast12MonthsComparison.difference)}</strong> a mais
-                            </>
-                        ) : (
-                            <span>Valores iguais</span>
-                        )}
+            {/* VJ vs BF Comparison - Last 12 Months with Tabs */}
+            {vjBfLast12MonthsComparison && vjBfCurrent11MonthsComparison && (
+                <div className="vj-bf-comparison-container">
+                    {/* Tabs */}
+                    <div className="comparison-tabs">
+                        <button
+                            className={`comparison-tab ${comparisonPeriod === 'previous12' ? 'active' : ''}`}
+                            onClick={() => setComparisonPeriod('previous12')}
+                        >
+                            12 Meses Anteriores
+                        </button>
+                        <button
+                            className={`comparison-tab ${comparisonPeriod === 'current11' ? 'active' : ''}`}
+                            onClick={() => setComparisonPeriod('current11')}
+                        >
+                            Mês Atual + 11 Anteriores
+                        </button>
                     </div>
 
-                    {isComparisonExpanded && (
-                        <div className="comparison-details" onClick={(e) => e.stopPropagation()}>
-                            <h4>Detalhamento das Notas</h4>
-                            <div className="details-columns">
-                                <div className="details-column">
-                                    <h5 className="column-header header-vj">VJ</h5>
-                                    <div className="details-list">
-                                        {vjBfLast12MonthsComparison.invoices
-                                            .filter(inv => inv.Provider === 'VJ')
-                                            .map((inv, idx) => (
-                                                <div key={idx} className="detail-item is-vj">
-                                                    <div className="detail-date">{formatDate(inv.date)}</div>
-                                                    <div className="detail-client">{inv.Client}</div>
-                                                    <div className="detail-value">{formatCurrency(inv.Value)}</div>
-                                                </div>
-                                            ))}
-                                        {vjBfLast12MonthsComparison.invoices.filter(inv => inv.Provider === 'VJ').length === 0 && (
-                                            <div className="no-invoices">Nenhuma nota</div>
-                                        )}
+                    {/* Comparison Content */}
+                    <div
+                        className={`vj-bf-comparison last-12-months ${isComparisonExpanded ? 'expanded' : ''}`}
+                        onClick={() => setIsComparisonExpanded(!isComparisonExpanded)}
+                        title="Clique para ver detalhes"
+                        role="button"
+                        tabIndex={0}
+                    >
+                        <h3>Comparação VJ x BF nos {comparisonPeriod === 'previous12' ? '12 meses anteriores' : 'mês atual + 11 anteriores'}</h3>
+                        <div className="comparison-cards">
+                            <div className="comparison-card">
+                                <span className="provider-name">VJ</span>
+                                <span className="provider-amount">
+                                    {formatCurrency(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.VJ : vjBfCurrent11MonthsComparison.VJ)}
+                                </span>
+                                <span className="provider-percentage" title={`Estimativa baseada em ${(providerRates.VJ * 100).toLocaleString('pt-BR')}% do ${comparisonPeriod === 'previous12' ? 'mês anterior' : 'mês atual'}`}>
+                                    (~{(providerRates.VJ * 100).toLocaleString('pt-BR')}% {comparisonPeriod === 'previous12' ? 'mês ant.' : 'mês atual'}: ~{formatCurrency(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.vjEstimate : vjBfCurrent11MonthsComparison.vjEstimate)})
+                                </span>
+                            </div>
+                            <div className="comparison-card">
+                                <span className="provider-name">BF</span>
+                                <span className="provider-amount">
+                                    {formatCurrency(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.BF : vjBfCurrent11MonthsComparison.BF)}
+                                </span>
+                                <span className="provider-percentage" title={`Estimativa baseada em ${(providerRates.BF * 100).toLocaleString('pt-BR')}% do ${comparisonPeriod === 'previous12' ? 'mês anterior' : 'mês atual'}`}>
+                                    (~{(providerRates.BF * 100).toLocaleString('pt-BR')}% {comparisonPeriod === 'previous12' ? 'mês ant.' : 'mês atual'}: ~{formatCurrency(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.bfEstimate : vjBfCurrent11MonthsComparison.bfEstimate)})
+                                </span>
+                            </div>
+                        </div>
+                        <div className="comparison-result">
+                            {(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.higher : vjBfCurrent11MonthsComparison.higher) !== 'equal' ? (
+                                <>
+                                    <span className="highlight-provider">{comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.higher : vjBfCurrent11MonthsComparison.higher}</span> emitiu <strong>{formatCurrency(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.difference : vjBfCurrent11MonthsComparison.difference)}</strong> a mais
+                                </>
+                            ) : (
+                                <span>Valores iguais</span>
+                            )}
+                        </div>
+
+                        {isComparisonExpanded && (
+                            <div className="comparison-details" onClick={(e) => e.stopPropagation()}>
+                                <h4>Detalhamento das Notas</h4>
+                                <div className="details-columns">
+                                    <div className="details-column">
+                                        <h5 className="column-header header-vj">VJ</h5>
+                                        <div className="details-list">
+                                            {(() => {
+                                                const currentInvoices = (comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.invoices : vjBfCurrent11MonthsComparison.invoices)
+                                                    .filter(inv => inv.Provider === 'VJ');
+
+                                                // If viewing current11, also show removed invoices from previous12
+                                                const removedInvoices = comparisonPeriod === 'current11'
+                                                    ? vjBfLast12MonthsComparison.invoices
+                                                        .filter(inv => inv.Provider === 'VJ')
+                                                        .filter(prevInv => !vjBfCurrent11MonthsComparison.invoices.some(
+                                                            currInv => currInv.id === prevInv.id && currInv.Provider === 'VJ'
+                                                        ))
+                                                    : [];
+
+                                                const allInvoices = [...currentInvoices, ...removedInvoices]
+                                                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                                                return allInvoices.map((inv, idx) => {
+                                                    let highlightClass = 'is-vj';
+
+                                                    if (comparisonPeriod === 'current11') {
+                                                        const isInPrevious12 = vjBfLast12MonthsComparison.invoices.some(
+                                                            prevInv => prevInv.id === inv.id && prevInv.Provider === 'VJ'
+                                                        );
+                                                        const isInCurrent11 = vjBfCurrent11MonthsComparison.invoices.some(
+                                                            currInv => currInv.id === inv.id && currInv.Provider === 'VJ'
+                                                        );
+
+                                                        if (!isInPrevious12 && isInCurrent11) {
+                                                            highlightClass = 'is-vj is-new'; // Blue for added
+                                                        } else if (isInPrevious12 && !isInCurrent11) {
+                                                            highlightClass = 'is-vj is-removed'; // Pink for removed
+                                                        }
+                                                    }
+
+                                                    return (
+                                                        <div key={idx} className={`detail-item ${highlightClass}`}>
+                                                            <div className="detail-date">{formatDate(inv.date)}</div>
+                                                            <div className="detail-client">{inv.Client}</div>
+                                                            <div className="detail-value">{formatCurrency(inv.Value)}</div>
+                                                        </div>
+                                                    );
+                                                });
+                                            })()}
+                                            {(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.invoices : vjBfCurrent11MonthsComparison.invoices).filter(inv => inv.Provider === 'VJ').length === 0 && (
+                                                <div className="no-invoices">Nenhuma nota</div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="details-column">
-                                    <h5 className="column-header header-bf">BF</h5>
-                                    <div className="details-list">
-                                        {vjBfLast12MonthsComparison.invoices
-                                            .filter(inv => inv.Provider === 'BF')
-                                            .map((inv, idx) => (
-                                                <div key={idx} className="detail-item is-bf">
-                                                    <div className="detail-date">{formatDate(inv.date)}</div>
-                                                    <div className="detail-client">{inv.Client}</div>
-                                                    <div className="detail-value">{formatCurrency(inv.Value)}</div>
-                                                </div>
-                                            ))}
-                                        {vjBfLast12MonthsComparison.invoices.filter(inv => inv.Provider === 'BF').length === 0 && (
-                                            <div className="no-invoices">Nenhuma nota</div>
-                                        )}
+                                    <div className="details-column">
+                                        <h5 className="column-header header-bf">BF</h5>
+                                        <div className="details-list">
+                                            {(() => {
+                                                const currentInvoices = (comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.invoices : vjBfCurrent11MonthsComparison.invoices)
+                                                    .filter(inv => inv.Provider === 'BF');
+
+                                                // If viewing current11, also show removed invoices from previous12
+                                                const removedInvoices = comparisonPeriod === 'current11'
+                                                    ? vjBfLast12MonthsComparison.invoices
+                                                        .filter(inv => inv.Provider === 'BF')
+                                                        .filter(prevInv => !vjBfCurrent11MonthsComparison.invoices.some(
+                                                            currInv => currInv.id === prevInv.id && currInv.Provider === 'BF'
+                                                        ))
+                                                    : [];
+
+                                                const allInvoices = [...currentInvoices, ...removedInvoices]
+                                                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                                                return allInvoices.map((inv, idx) => {
+                                                    let highlightClass = 'is-bf';
+
+                                                    if (comparisonPeriod === 'current11') {
+                                                        const isInPrevious12 = vjBfLast12MonthsComparison.invoices.some(
+                                                            prevInv => prevInv.id === inv.id && prevInv.Provider === 'BF'
+                                                        );
+                                                        const isInCurrent11 = vjBfCurrent11MonthsComparison.invoices.some(
+                                                            currInv => currInv.id === inv.id && currInv.Provider === 'BF'
+                                                        );
+
+                                                        if (!isInPrevious12 && isInCurrent11) {
+                                                            highlightClass = 'is-bf is-new'; // Blue for added
+                                                        } else if (isInPrevious12 && !isInCurrent11) {
+                                                            highlightClass = 'is-bf is-removed'; // Pink for removed
+                                                        }
+                                                    }
+
+                                                    return (
+                                                        <div key={idx} className={`detail-item ${highlightClass}`}>
+                                                            <div className="detail-date">{formatDate(inv.date)}</div>
+                                                            <div className="detail-client">{inv.Client}</div>
+                                                            <div className="detail-value">{formatCurrency(inv.Value)}</div>
+                                                        </div>
+                                                    );
+                                                });
+                                            })()}
+                                            {(comparisonPeriod === 'previous12' ? vjBfLast12MonthsComparison.invoices : vjBfCurrent11MonthsComparison.invoices).filter(inv => inv.Provider === 'BF').length === 0 && (
+                                                <div className="no-invoices">Nenhuma nota</div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             )}
 
