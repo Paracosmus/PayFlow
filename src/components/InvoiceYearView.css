@@ -102,6 +102,11 @@
     z-index: 2;
 }
 
+/* Align BF and VJ provider headers to the right */
+.invoice-table th.provider-col {
+    text-align: right;
+}
+
 .invoice-table tbody tr {
     border-bottom: 1px solid #e2e8f0;
     transition: background 0.15s ease;
