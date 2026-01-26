@@ -379,7 +379,7 @@ function App() {
                   }
                 }
               });
-            } else if (file.name === 'financiamentos' || file.name === 'emprestimos') {
+            } else if (file.name === 'financiamentos' || file.name === 'emprestimos' || file.name === 'impostos') {
               for (let i = 0; i < installments; i++) {
                 const targetDate = new Date(y, m - 1 + i, 1);
                 const targetYear = targetDate.getFullYear();
@@ -394,7 +394,7 @@ function App() {
                 });
               }
             } else {
-              // For regular categories (boletos, impostos), use the parsed date in YYYY-MM-DD format
+              // For regular categories (boletos), use the parsed date in YYYY-MM-DD format
               const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
               occurrences.push({ dateStr: dateStr, currentInstallment: null, totalInstallments: null });
             }
@@ -402,7 +402,7 @@ function App() {
             occurrences.forEach(occ => {
               let adjustedDate;
 
-              if (file.name === 'financiamentos' || file.name === 'emprestimos') {
+              if (file.name === 'financiamentos' || file.name === 'emprestimos' || file.name === 'impostos') {
                 adjustedDate = normalizeFixedDate(occ.dateStr);
               } else {
                 adjustedDate = new Date(occ.dateStr + 'T12:00:00');

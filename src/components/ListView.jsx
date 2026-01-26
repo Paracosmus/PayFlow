@@ -233,7 +233,7 @@ export default function ListView({ year, month, transactions, invoices = [], onP
                                                         style={{ backgroundColor: getCategoryColor(p.category) }}
                                                     />
                                                     <span className="payment-name">{p.Beneficiary}</span>
-                                                    {p.totalInstallments && (
+                                                    {p.totalInstallments && p.totalInstallments > 1 && (
                                                         <span className="payment-installment">
                                                             [{p.currentInstallment}/{p.totalInstallments}]
                                                         </span>

@@ -220,7 +220,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             <div className="detail-value">{formatCurrency(selectedPayment.Value, selectedPayment)}</div>
                             <div className="detail-date">Vencimento: {formatDate(selectedPayment.date)}</div>
 
-                            {selectedPayment.totalInstallments && (
+                            {selectedPayment.totalInstallments && selectedPayment.totalInstallments > 1 && (
                                 <div className="detail-installments">
                                     Parcela {selectedPayment.currentInstallment} de {selectedPayment.totalInstallments}
                                 </div>

@@ -287,7 +287,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                         >
                                             <div className="mobile-payment-left">
                                                 <span className="mobile-payment-name">{p.Beneficiary}</span>
-                                                {p.totalInstallments && (
+                                                {p.totalInstallments && p.totalInstallments > 1 && (
                                                     <span className="mobile-payment-inst">
                                                         [{p.currentInstallment}/{p.totalInstallments}]
                                                     </span>
@@ -409,7 +409,7 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                 >
                                                     <div className="p-left">
                                                         <span className="p-name">{p.Beneficiary}</span>
-                                                        {p.totalInstallments && (
+                                                        {p.totalInstallments && p.totalInstallments > 1 && (
                                                             <span className="p-inst">[{p.currentInstallment}/{p.totalInstallments}]</span>
                                                         )}
                                                     </div>
