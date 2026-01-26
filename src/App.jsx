@@ -32,6 +32,7 @@ function App() {
   const [tabs, setTabs] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [exchangeRates, setExchangeRates] = useState(null); // Exchange rates for currency conversion
+  const [providerRates, setProviderRates] = useState({ VJ: 0.14, BF: 0.14 }); // Provider specific tax rates
 
   // Category visibility state - Set of disabled categories
   // On mobile, 'individual' is disabled by default
@@ -123,17 +124,41 @@ function App() {
             const fontesText = await fontesResponse.text();
             const fontesData = parseCSV(fontesText);
 
-            // Process fontes data - look for IOF variable
+            // Process fontes data - look for variables
+            let newVjRate = 0.14;
+            let newBfRate = 0.14;
+            let ratesFound = false;
+
             fontesData.forEach(item => {
-              if (item.Variable && item.Variable.toUpperCase() === 'IOF') {
+              const variable = item.Variable ? item.Variable.trim() : '';
+              const upperVar = variable.toUpperCase();
+
+              if (upperVar === 'IOF') {
                 const iofValue = parseFloat(item.Value);
                 if (!isNaN(iofValue)) {
                   setIOFRate(iofValue);
                   console.log(`IOF loaded from fontes: ${(iofValue * 100).toFixed(2)}%`);
                 }
+              } else if (variable === 'AliquotaVJ') {
+                const val = parseFloat(item.Value);
+                if (!isNaN(val)) {
+                  newVjRate = val / 100; // Convert 14 to 0.14
+                  ratesFound = true;
+                  console.log(`AliquotaVJ loaded: ${val.toFixed(2)}%`);
+                }
+              } else if (variable === 'AliquotaBF') {
+                const val = parseFloat(item.Value);
+                if (!isNaN(val)) {
+                  newBfRate = val / 100; // Convert 14 to 0.14
+                  ratesFound = true;
+                  console.log(`AliquotaBF loaded: ${val.toFixed(2)}%`);
+                }
               }
-              // You can add more variables here in the future
             });
+
+            if (ratesFound) {
+              setProviderRates({ VJ: newVjRate, BF: newBfRate });
+            }
 
             console.log('Configuration loaded from fontes');
           } else {
@@ -818,7 +843,7 @@ function App() {
             onPaymentClick={handlePaymentClick}
           />
         ) : viewMode === 'invoices' ? (
-          <InvoiceYearView invoices={invoices} />
+          <InvoiceYearView invoices={invoices} providerRates={providerRates} />
         ) : viewMode === 'taxes' ? (
           <TaxEstimateView invoices={invoices} />
         ) : (

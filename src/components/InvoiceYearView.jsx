@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { getAvailableYears, groupInvoicesByProviderAndMonth, getProviders, compareProviders, calculateInvoiceTotal, getInvoicesByProvider, getInvoicesByYear } from '../utils/invoiceUtils';
 import './InvoiceYearView.css';
 
-export default function InvoiceYearView({ invoices }) {
+export default function InvoiceYearView({ invoices, providerRates = { VJ: 0.14, BF: 0.14 } }) {
     const availableYears = useMemo(() => getAvailableYears(invoices), [invoices]);
     const [selectedYear, setSelectedYear] = useState(availableYears[0] || new Date().getFullYear());
     const [expandedCells, setExpandedCells] = useState(new Set()); // Track multiple expanded cells
@@ -45,6 +45,8 @@ export default function InvoiceYearView({ invoices }) {
         return null;
     }, [providers, invoices, selectedYear]);
 
+    const [isComparisonExpanded, setIsComparisonExpanded] = useState(false);
+
     // Compare VJ and BF for the last 12 months (rolling)
     const vjBfLast12MonthsComparison = useMemo(() => {
         const allProviders = [...new Set(invoices.map(inv => inv.Provider))];
@@ -64,6 +66,9 @@ export default function InvoiceYearView({ invoices }) {
             // new Date(2026, 0, 0) gives the last day of the previous month (Dec 2025).
             const endDate = new Date(currentYear, currentMonth, 0, 23, 59, 59, 999);
 
+            // Start of Previous Month (for the 14% calculation)
+            const startOfPreviousMonth = new Date(currentYear, currentMonth - 1, 1, 0, 0, 0, 0);
+
             // Filter invoices within this strictly defined range (full previous 12 months)
             const last12MonthsInvoices = invoices.filter(inv => {
                 const invDate = new Date(inv.date);
@@ -79,18 +84,40 @@ export default function InvoiceYearView({ invoices }) {
                 .filter(inv => inv.Provider === 'BF')
                 .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
 
+            // Calculate totals for PREVIOUS MONTH ONLY (for the 14% estimate)
+            const previousMonthInvoices = invoices.filter(inv => {
+                const invDate = new Date(inv.date);
+                return invDate >= startOfPreviousMonth && invDate <= endDate;
+            });
+
+            const vjTotalPrevMonth = previousMonthInvoices
+                .filter(inv => inv.Provider === 'VJ')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
+            const bfTotalPrevMonth = previousMonthInvoices
+                .filter(inv => inv.Provider === 'BF')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
             const difference = Math.abs(vjTotal - bfTotal);
             const higher = vjTotal > bfTotal ? 'VJ' : (bfTotal > vjTotal ? 'BF' : 'equal');
+
+            // Sort invoices by date descending for display
+            const sortedInvoices = [...last12MonthsInvoices]
+                .filter(inv => inv.Provider === 'VJ' || inv.Provider === 'BF')
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
 
             return {
                 VJ: vjTotal,
                 BF: bfTotal,
+                vjEstimate: vjTotalPrevMonth * providerRates.VJ,
+                bfEstimate: bfTotalPrevMonth * providerRates.BF,
                 difference,
-                higher
+                higher,
+                invoices: sortedInvoices
             };
         }
         return null;
-    }, [invoices]);
+    }, [invoices, providerRates]);
 
     // Get invoices for a specific month and provider
     const getMonthInvoices = (provider, monthIndex) => {
@@ -126,20 +153,38 @@ export default function InvoiceYearView({ invoices }) {
         );
     }
 
+    // Helper to format date
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('pt-BR');
+    };
+
     return (
         <div className="invoice-year-view">
             {/* VJ vs BF Comparison - Last 12 Months */}
             {vjBfLast12MonthsComparison && (
-                <div className="vj-bf-comparison last-12-months">
-                    <h3>Comparação VJ x BF nos 12 meses Anteriores</h3>
+                <div
+                    className={`vj-bf-comparison last-12-months ${isComparisonExpanded ? 'expanded' : ''}`}
+                    onClick={() => setIsComparisonExpanded(!isComparisonExpanded)}
+                    title="Clique para ver detalhes"
+                    role="button"
+                    tabIndex={0}
+                >
+                    <h3>Comparação VJ x BF nos 12 meses anteriores</h3>
                     <div className="comparison-cards">
                         <div className="comparison-card">
                             <span className="provider-name">VJ</span>
                             <span className="provider-amount">{formatCurrency(vjBfLast12MonthsComparison.VJ)}</span>
+                            <span className="provider-percentage" title={`Estimativa baseada em ${(providerRates.VJ * 100).toLocaleString('pt-BR')}% do mês anterior`}>
+                                (~{(providerRates.VJ * 100).toLocaleString('pt-BR')}% mês ant.: ~{formatCurrency(vjBfLast12MonthsComparison.vjEstimate)})
+                            </span>
                         </div>
                         <div className="comparison-card">
                             <span className="provider-name">BF</span>
                             <span className="provider-amount">{formatCurrency(vjBfLast12MonthsComparison.BF)}</span>
+                            <span className="provider-percentage" title={`Estimativa baseada em ${(providerRates.BF * 100).toLocaleString('pt-BR')}% do mês anterior`}>
+                                (~{(providerRates.BF * 100).toLocaleString('pt-BR')}% mês ant.: ~{formatCurrency(vjBfLast12MonthsComparison.bfEstimate)})
+                            </span>
                         </div>
                     </div>
                     <div className="comparison-result">
@@ -151,6 +196,48 @@ export default function InvoiceYearView({ invoices }) {
                             <span>Valores iguais</span>
                         )}
                     </div>
+
+                    {isComparisonExpanded && (
+                        <div className="comparison-details" onClick={(e) => e.stopPropagation()}>
+                            <h4>Detalhamento das Notas</h4>
+                            <div className="details-columns">
+                                <div className="details-column">
+                                    <h5 className="column-header header-vj">VJ</h5>
+                                    <div className="details-list">
+                                        {vjBfLast12MonthsComparison.invoices
+                                            .filter(inv => inv.Provider === 'VJ')
+                                            .map((inv, idx) => (
+                                                <div key={idx} className="detail-item is-vj">
+                                                    <div className="detail-date">{formatDate(inv.date)}</div>
+                                                    <div className="detail-client">{inv.Client}</div>
+                                                    <div className="detail-value">{formatCurrency(inv.Value)}</div>
+                                                </div>
+                                            ))}
+                                        {vjBfLast12MonthsComparison.invoices.filter(inv => inv.Provider === 'VJ').length === 0 && (
+                                            <div className="no-invoices">Nenhuma nota</div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="details-column">
+                                    <h5 className="column-header header-bf">BF</h5>
+                                    <div className="details-list">
+                                        {vjBfLast12MonthsComparison.invoices
+                                            .filter(inv => inv.Provider === 'BF')
+                                            .map((inv, idx) => (
+                                                <div key={idx} className="detail-item is-bf">
+                                                    <div className="detail-date">{formatDate(inv.date)}</div>
+                                                    <div className="detail-client">{inv.Client}</div>
+                                                    <div className="detail-value">{formatCurrency(inv.Value)}</div>
+                                                </div>
+                                            ))}
+                                        {vjBfLast12MonthsComparison.invoices.filter(inv => inv.Provider === 'BF').length === 0 && (
+                                            <div className="no-invoices">Nenhuma nota</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
