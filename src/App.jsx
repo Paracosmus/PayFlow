@@ -5,6 +5,7 @@ import ListView from './components/ListView';
 import MonthTabs from './components/MonthTabs';
 import InvoiceYearView from './components/InvoiceYearView';
 import TaxEstimateView from './components/TaxEstimateView';
+import CategoryYearView from './components/CategoryYearView';
 import { parseCSV } from './utils/csvParser';
 import { normalizeFixedDate, adjustToNextBusinessDay, adjustToPreviousBusinessDay, keepOriginalDate } from './utils/dateUtils';
 import { fetchExchangeRates, convertToBRL, setIOFRate } from './utils/currencyUtils';
@@ -62,7 +63,7 @@ function App() {
   // Mobile responsive state
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // View mode state: 'calendar', 'list', 'invoices', 'taxes'
+  // View mode state: 'calendar', 'list', 'invoices', 'taxes', 'categories'
   const [viewMode, setViewMode] = useState('calendar');
 
   // Search state
@@ -292,7 +293,7 @@ function App() {
 
                     // Validate parsed End date components
                     if (!isNaN(endY) && !isNaN(endM) && !isNaN(endD) &&
-                        endY >= 1900 && endY <= 2100 && endM >= 1 && endM <= 12 && endD >= 1 && endD <= 31) {
+                      endY >= 1900 && endY <= 2100 && endM >= 1 && endM <= 12 && endD >= 1 && endD <= 31) {
                       endDate = new Date(endY, endM - 1, endD);
                       console.log(`End date for ${item.Beneficiary || 'item'}: ${endDate.toLocaleDateString('pt-BR')}`);
                     } else {
@@ -747,6 +748,19 @@ function App() {
                 </svg>
                 <span>Impostos</span>
               </button>
+              <button
+                className={`view-mode-btn ${viewMode === 'categories' ? 'active' : ''}`}
+                onClick={() => setViewMode('categories')}
+                title="Categorias por Ano"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Categorias</span>
+              </button>
             </div>
           )}
         </div>
@@ -778,6 +792,12 @@ function App() {
             >
               💰 Impostos
             </button>
+            <button
+              className={`mobile-view-tab ${viewMode === 'categories' ? 'active' : ''}`}
+              onClick={() => setViewMode('categories')}
+            >
+              📊 Categorias
+            </button>
           </div>
         )}
 
@@ -799,8 +819,10 @@ function App() {
           />
         ) : viewMode === 'invoices' ? (
           <InvoiceYearView invoices={invoices} />
-        ) : (
+        ) : viewMode === 'taxes' ? (
           <TaxEstimateView invoices={invoices} />
+        ) : (
+          <CategoryYearView transactions={filteredTransactions} />
         )
         }
       </main >
