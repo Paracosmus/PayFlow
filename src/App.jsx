@@ -29,6 +29,7 @@ function App() {
   const [accounts, setAccounts] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tabs, setTabs] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [exchangeRates, setExchangeRates] = useState(null); // Exchange rates for currency conversion
 
   // Category visibility state - Set of disabled categories
@@ -220,37 +221,85 @@ function App() {
             if (file.name === 'periodicos' || file.name === 'individual') {
               // Both 'periodicos' and 'individual' now use the 'Interval' column
               // Interval defines the payment frequency in months (1 = monthly, 12 = yearly, etc.)
-              const interval = parseInt(item.Interval) || 1;
+              // If Interval is empty or 0, it's a one-time payment
 
-              // Validate interval
-              if (interval < 1 || interval > 120) {
-                console.warn(`Skipping item with invalid interval in ${file.name}:`, interval);
-                return;
+              const intervalValue = item.Interval && item.Interval.toString().trim() !== ''
+                ? parseInt(item.Interval)
+                : 0;
+
+              // Check if this is a one-time payment (Interval = 0 or empty)
+              const isOneTimePayment = intervalValue === 0;
+
+              if (!isOneTimePayment) {
+                // Validate interval for recurring payments
+                if (intervalValue < 1 || intervalValue > 120) {
+                  console.warn(`Skipping item with invalid interval in ${file.name}:`, intervalValue);
+                  return;
+                }
               }
 
               // Create reference date from the original CSV entry
               const referenceDate = new Date(y, m - 1, d);
 
-              // Generate occurrences from reference date up to 2030
-              const endYear = 2030;
-              const endDate = new Date(endYear, 11, 31); // December 31, 2030
-
-              let currentDate = new Date(referenceDate);
-
-              while (currentDate <= endDate) {
-                const occYear = currentDate.getFullYear();
-                const occMonth = currentDate.getMonth() + 1;
-                const occDay = currentDate.getDate();
-
-                const dateStr = `${occYear}-${String(occMonth).padStart(2, '0')}-${String(occDay).padStart(2, '0')}`;
+              if (isOneTimePayment) {
+                // One-time payment: add only the reference date
+                const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 occurrences.push({
                   dateStr: dateStr,
                   currentInstallment: null,
                   totalInstallments: null
                 });
+                console.log(`One-time payment for ${item.Beneficiary || 'item'} on ${referenceDate.toLocaleDateString('pt-BR')}`);
+              } else {
+                // Recurring payment: generate occurrences based on interval
+                const interval = intervalValue;
 
-                // Move to next occurrence by adding 'interval' months
-                currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
+                // Parse End date if provided
+                let endDate = new Date(2030, 11, 31); // Default: December 31, 2030
+
+                if (item.End && typeof item.End === 'string' && item.End.trim() !== '') {
+                  // Parse End date from Google Sheets format (DD/MM/YYYY)
+                  let endY, endM, endD;
+                  if (item.End.includes('/')) {
+                    const parts = item.End.split('/');
+                    endD = parseInt(parts[0]);
+                    endM = parseInt(parts[1]);
+                    endY = parseInt(parts[2]);
+                  } else {
+                    // Fallback to YYYY-MM-DD format
+                    const parts = item.End.split('-');
+                    endY = parseInt(parts[0]);
+                    endM = parseInt(parts[1]);
+                    endD = parseInt(parts[2]);
+                  }
+
+                  // Validate parsed End date components
+                  if (!isNaN(endY) && !isNaN(endM) && !isNaN(endD) &&
+                    endY >= 1900 && endY <= 2100 && endM >= 1 && endM <= 12 && endD >= 1 && endD <= 31) {
+                    endDate = new Date(endY, endM - 1, endD);
+                    console.log(`End date for ${item.Beneficiary || 'item'}: ${endDate.toLocaleDateString('pt-BR')}`);
+                  } else {
+                    console.warn(`Invalid End date for ${item.Beneficiary || 'item'} in ${file.name}:`, item.End);
+                  }
+                }
+
+                let currentDate = new Date(referenceDate);
+
+                while (currentDate <= endDate) {
+                  const occYear = currentDate.getFullYear();
+                  const occMonth = currentDate.getMonth() + 1;
+                  const occDay = currentDate.getDate();
+
+                  const dateStr = `${occYear}-${String(occMonth).padStart(2, '0')}-${String(occDay).padStart(2, '0')}`;
+                  occurrences.push({
+                    dateStr: dateStr,
+                    currentInstallment: null,
+                    totalInstallments: null
+                  });
+
+                  // Move to next occurrence by adding 'interval' months
+                  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
+                }
               }
             } else if (file.name === 'recorrentes') {
               // Create reference date from the original CSV entry
