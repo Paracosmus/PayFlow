@@ -15,7 +15,17 @@ export default function InvoiceYearView({ invoices }) {
 
     // Group data for selected year
     const yearData = useMemo(() => groupInvoicesByProviderAndMonth(invoices, selectedYear), [invoices, selectedYear]);
-    const providers = useMemo(() => getProviders(invoices, selectedYear), [invoices, selectedYear]);
+    const providers = useMemo(() => {
+        const list = getProviders(invoices, selectedYear);
+        // Sort to ensure VJ comes first, then BF
+        return [...list].sort((a, b) => {
+            if (a === 'VJ') return -1;
+            if (b === 'VJ') return 1;
+            if (a === 'BF') return -1;
+            if (b === 'BF') return 1;
+            return a.localeCompare(b);
+        });
+    }, [invoices, selectedYear]);
 
     // Calculate totals for each provider
     const yearTotals = useMemo(() => {
@@ -34,6 +44,53 @@ export default function InvoiceYearView({ invoices }) {
         }
         return null;
     }, [providers, invoices, selectedYear]);
+
+    // Compare VJ and BF for the last 12 months (rolling)
+    const vjBfLast12MonthsComparison = useMemo(() => {
+        const allProviders = [...new Set(invoices.map(inv => inv.Provider))];
+
+        if (allProviders.includes('VJ') && allProviders.includes('BF')) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth();
+
+            // Start Date: 1st day of the 12th month ago
+            // Example: If today is Jan 2026 (month 0), we want Jan 2025.
+            // new Date(2026, 0 - 12, 1) = Jan 1, 2025.
+            const startDate = new Date(currentYear, currentMonth - 12, 1, 0, 0, 0, 0);
+
+            // End Date: Last day of the previous month
+            // Example: If today is Jan 2026, we want Dec 31, 2025.
+            // new Date(2026, 0, 0) gives the last day of the previous month (Dec 2025).
+            const endDate = new Date(currentYear, currentMonth, 0, 23, 59, 59, 999);
+
+            // Filter invoices within this strictly defined range (full previous 12 months)
+            const last12MonthsInvoices = invoices.filter(inv => {
+                const invDate = new Date(inv.date);
+                return invDate >= startDate && invDate <= endDate;
+            });
+
+            // Calculate totals for each provider
+            const vjTotal = last12MonthsInvoices
+                .filter(inv => inv.Provider === 'VJ')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
+            const bfTotal = last12MonthsInvoices
+                .filter(inv => inv.Provider === 'BF')
+                .reduce((sum, inv) => sum + (parseFloat(inv.Value) || 0), 0);
+
+            const difference = Math.abs(vjTotal - bfTotal);
+            const higher = vjTotal > bfTotal ? 'VJ' : (bfTotal > vjTotal ? 'BF' : 'equal');
+
+            return {
+                VJ: vjTotal,
+                BF: bfTotal,
+                difference,
+                higher
+            };
+        }
+        return null;
+    }, [invoices]);
 
     // Get invoices for a specific month and provider
     const getMonthInvoices = (provider, monthIndex) => {
@@ -71,6 +128,32 @@ export default function InvoiceYearView({ invoices }) {
 
     return (
         <div className="invoice-year-view">
+            {/* VJ vs BF Comparison - Last 12 Months */}
+            {vjBfLast12MonthsComparison && (
+                <div className="vj-bf-comparison last-12-months">
+                    <h3>Comparação VJ x BF nos 12 meses Anteriores</h3>
+                    <div className="comparison-cards">
+                        <div className="comparison-card">
+                            <span className="provider-name">VJ</span>
+                            <span className="provider-amount">{formatCurrency(vjBfLast12MonthsComparison.VJ)}</span>
+                        </div>
+                        <div className="comparison-card">
+                            <span className="provider-name">BF</span>
+                            <span className="provider-amount">{formatCurrency(vjBfLast12MonthsComparison.BF)}</span>
+                        </div>
+                    </div>
+                    <div className="comparison-result">
+                        {vjBfLast12MonthsComparison.higher !== 'equal' ? (
+                            <>
+                                <span className="highlight-provider">{vjBfLast12MonthsComparison.higher}</span> emitiu <strong>{formatCurrency(vjBfLast12MonthsComparison.difference)}</strong> a mais
+                            </>
+                        ) : (
+                            <span>Valores iguais</span>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* Year Tabs */}
             <div className="year-tabs">
                 {availableYears.map(year => (
