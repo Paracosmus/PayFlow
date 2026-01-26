@@ -31,6 +31,25 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
         return d.toLocaleDateString('pt-BR');
     };
 
+    const formatDescription = (description) => {
+        if (!description) return "Sem descrição disponível.";
+
+        // Split by semicolon and filter out empty parts
+        const parts = description.split(';').map(part => part.trim()).filter(part => part.length > 0);
+
+        // If only one part or no semicolons, return as is
+        if (parts.length <= 1) {
+            return description;
+        }
+
+        // Return each part as a separate line with spacing
+        return parts.map((part, index) => (
+            <span key={index} className="description-line">
+                {part}
+            </span>
+        ));
+    };
+
     // Search handlers
     const handleSearchClick = () => {
         onSearch && onSearch(localSearchInput);
@@ -224,7 +243,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             <div className="detail-divider"></div>
                             <div className="detail-description-label">Descrição</div>
                             <p className="detail-description">
-                                {selectedPayment.Description || "Sem descrição disponível."}
+                                {formatDescription(selectedPayment.Description)}
                             </p>
                         </div>
                     )}
@@ -241,7 +260,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             <div className="detail-divider"></div>
                             <div className="detail-description-label">Descrição</div>
                             <p className="detail-description">
-                                {selectedInvoice.Description || "Sem descrição disponível."}
+                                {formatDescription(selectedInvoice.Description)}
                             </p>
                         </div>
                     )}

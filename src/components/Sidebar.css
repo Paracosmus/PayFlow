@@ -477,6 +477,14 @@
     border: 1px solid var(--border);
     min-height: 60px;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.description-line {
+    display: block;
+    padding: 4px 0;
 }
 
 /* Detail card accent line */

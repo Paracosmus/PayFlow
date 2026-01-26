@@ -254,38 +254,65 @@ function App() {
                 // Recurring payment: generate occurrences based on interval
                 const interval = intervalValue;
 
-                // Parse End date if provided
+                // Parse End field - can be either a date or a number (repetition count)
                 let endDate = new Date(2030, 11, 31); // Default: December 31, 2030
+                let maxOccurrences = null; // If set, limit to this many occurrences
 
                 if (item.End && typeof item.End === 'string' && item.End.trim() !== '') {
-                  // Parse End date from Google Sheets format (DD/MM/YYYY)
-                  let endY, endM, endD;
-                  if (item.End.includes('/')) {
-                    const parts = item.End.split('/');
-                    endD = parseInt(parts[0]);
-                    endM = parseInt(parts[1]);
-                    endY = parseInt(parts[2]);
-                  } else {
-                    // Fallback to YYYY-MM-DD format
-                    const parts = item.End.split('-');
-                    endY = parseInt(parts[0]);
-                    endM = parseInt(parts[1]);
-                    endD = parseInt(parts[2]);
-                  }
+                  const endValue = item.End.trim();
 
-                  // Validate parsed End date components
-                  if (!isNaN(endY) && !isNaN(endM) && !isNaN(endD) &&
-                    endY >= 1900 && endY <= 2100 && endM >= 1 && endM <= 12 && endD >= 1 && endD <= 31) {
-                    endDate = new Date(endY, endM - 1, endD);
-                    console.log(`End date for ${item.Beneficiary || 'item'}: ${endDate.toLocaleDateString('pt-BR')}`);
+                  // Check if it's a number (repetition count)
+                  const asNumber = parseInt(endValue);
+                  const isNumeric = !isNaN(asNumber) && endValue === asNumber.toString();
+
+                  if (isNumeric) {
+                    // It's a number - use as repetition count
+                    if (asNumber > 0 && asNumber <= 1000) {
+                      maxOccurrences = asNumber;
+                      console.log(`Repetition count for ${item.Beneficiary || 'item'}: ${maxOccurrences} times`);
+                    } else {
+                      console.warn(`Invalid repetition count for ${item.Beneficiary || 'item'} in ${file.name}:`, asNumber);
+                    }
+                  } else if (endValue.includes('/') || endValue.includes('-')) {
+                    // It's a date - parse it
+                    let endY, endM, endD;
+                    if (endValue.includes('/')) {
+                      // DD/MM/YYYY format
+                      const parts = endValue.split('/');
+                      endD = parseInt(parts[0]);
+                      endM = parseInt(parts[1]);
+                      endY = parseInt(parts[2]);
+                    } else {
+                      // YYYY-MM-DD format
+                      const parts = endValue.split('-');
+                      endY = parseInt(parts[0]);
+                      endM = parseInt(parts[1]);
+                      endD = parseInt(parts[2]);
+                    }
+
+                    // Validate parsed End date components
+                    if (!isNaN(endY) && !isNaN(endM) && !isNaN(endD) &&
+                        endY >= 1900 && endY <= 2100 && endM >= 1 && endM <= 12 && endD >= 1 && endD <= 31) {
+                      endDate = new Date(endY, endM - 1, endD);
+                      console.log(`End date for ${item.Beneficiary || 'item'}: ${endDate.toLocaleDateString('pt-BR')}`);
+                    } else {
+                      console.warn(`Invalid End date for ${item.Beneficiary || 'item'} in ${file.name}:`, item.End);
+                    }
                   } else {
-                    console.warn(`Invalid End date for ${item.Beneficiary || 'item'} in ${file.name}:`, item.End);
+                    console.warn(`Invalid End value for ${item.Beneficiary || 'item'} in ${file.name}:`, item.End);
                   }
                 }
 
                 let currentDate = new Date(referenceDate);
+                let occurrenceCount = 0;
 
+                // Generate occurrences based on either end date or max occurrences
                 while (currentDate <= endDate) {
+                  // If maxOccurrences is set, check if we've reached the limit
+                  if (maxOccurrences !== null && occurrenceCount >= maxOccurrences) {
+                    break;
+                  }
+
                   const occYear = currentDate.getFullYear();
                   const occMonth = currentDate.getMonth() + 1;
                   const occDay = currentDate.getDate();
@@ -296,6 +323,8 @@ function App() {
                     currentInstallment: null,
                     totalInstallments: null
                   });
+
+                  occurrenceCount++;
 
                   // Move to next occurrence by adding 'interval' months
                   currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
