@@ -18,9 +18,9 @@ const ALL_CATEGORIES = [
   'periodicos',
   'impostos',
   'recorrentes',
+  'compras',
   'individual',
   'notas', // Invoice category
-  'lila',
 ];
 
 function App() {
@@ -32,13 +32,12 @@ function App() {
   const [exchangeRates, setExchangeRates] = useState(null); // Exchange rates for currency conversion
 
   // Category visibility state - Set of disabled categories
-  // 'lila' is always disabled by default (on all devices)
-  // On mobile, 'individual' is also disabled by default
+  // On mobile, 'individual' is disabled by default
   const [disabledCategories, setDisabledCategories] = useState(() => {
     if (window.innerWidth <= 768) {
-      return new Set(['individual', 'lila']);
+      return new Set(['individual']);
     }
-    return new Set(['lila']);
+    return new Set();
   });
 
   // Toggle category visibility
@@ -156,8 +155,8 @@ function App() {
           'periodicos',
           'impostos',
           'recorrentes',
-          'lila',
-          'individual'
+          'compras',
+          'individual',
         ];
 
         const fetchFile = async (name) => {
@@ -253,7 +252,7 @@ function App() {
                 // Move to next occurrence by adding 'interval' months
                 currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
               }
-            } else if (file.name === 'recorrentes' || file.name === 'lila') {
+            } else if (file.name === 'recorrentes') {
               // Create reference date from the original CSV entry
               const referenceDate = new Date(y, m - 1, d);
 
@@ -312,12 +311,12 @@ function App() {
               } else if (file.name === 'impostos' || file.name === 'recorrentes') {
                 // Move to previous business day if weekend/holiday
                 adjustedDate = adjustToPreviousBusinessDay(adjustedDate);
-              } else if (file.name === 'periodicos' || file.name === 'individual' || file.name === 'lila') {
+              } else if (file.name === 'periodicos' || file.name === 'individual') {
                 // Keep original date (no adjustment)
                 adjustedDate = keepOriginalDate(adjustedDate);
               }
 
-              if (file.name !== 'periodicos' && file.name !== 'recorrentes' && file.name !== 'lila' && file.name !== 'individual') {
+              if (file.name !== 'periodicos' && file.name !== 'recorrentes' && file.name !== 'individual') {
                 if (adjustedDate > maxDataDate) {
                   maxDataDate = adjustedDate;
                 }
@@ -333,15 +332,33 @@ function App() {
                 if (isDuplicate) return;
               }
 
-              // Convert currency if needed
               const originalCurrency = item.currency || 'BRL';
               const originalValue = item.originalValue || item.Value || 0;
               const valueInBRL = originalCurrency === 'BRL'
                 ? originalValue
                 : convertToBRL(originalValue, originalCurrency, rates);
 
+              // Normalize Beneficiary field for compras category
+              // For 'compras', use 'Item' field as the display name (max 20 chars)
+              let beneficiaryName;
+              let fullName; // Store full name for detail panel
+
+              if (file.name === 'compras') {
+                const itemName = item.Item || item.Beneficiary || 'Item não especificado';
+                fullName = itemName; // Keep full name for detail panel
+                // Truncate to 20 characters for calendar/list display
+                beneficiaryName = itemName.length > 20
+                  ? itemName.substring(0, 20) + '...'
+                  : itemName;
+              } else {
+                beneficiaryName = item.Beneficiary || 'Não especificado';
+                fullName = beneficiaryName; // Same for other categories
+              }
+
               allData.push({
                 ...item,
+                Beneficiary: beneficiaryName, // Truncated name for calendar/list
+                FullName: fullName, // Full name for detail panel
                 originalDate: occ.dateStr,
                 date: adjustedDate,
                 category: file.name,
@@ -462,8 +479,8 @@ function App() {
       'impostos': 'Impostos',
       'manual': 'Manual',
       'recorrentes': 'Recorrentes',
-      'lila': 'Lila',
-      'individual': 'Individual'
+      'compras': 'Compras',
+      'individual': 'Individual',
     };
 
     if (isInvoice) {
@@ -523,12 +540,9 @@ function App() {
     });
 
 
-    // Exclude 'lila' category from month and paid totals
     const monthTotal = currentMonthPayments
-      .filter(p => p.category !== 'lila')
       .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
     const paidTotal = pastDaysPayments
-      .filter(p => p.category !== 'lila')
       .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
     return monthTotal - paidTotal;

@@ -49,7 +49,6 @@ Ao clicar em um pagamento ou nota fiscal, a sidebar mostra o valor no mesmo form
 ### 4. Cálculos
 - **Todos os cálculos** (totais semanais, mensais, saldo disponível) são feitos em BRL
 - Os valores são convertidos automaticamente antes de serem somados
-- A categoria 'lila' continua sendo excluída dos totais
 
 ## Exemplos de Uso
 

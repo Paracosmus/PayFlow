@@ -82,9 +82,7 @@ export default function ListView({ year, month, transactions, invoices = [], onP
             }
 
             const week = weekMap.get(weekKey);
-            // Exclude 'lila' category from day and week totals
             const dayTotal = dayData.payments
-                .filter(p => p.category !== 'lila')
                 .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
             week.days.push({ ...dayData, total: dayTotal });
             week.total += dayTotal;
@@ -94,9 +92,8 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         return Array.from(weekMap.values()).sort((a, b) => a.startDate - b.startDate);
     }, [paymentsByDate]);
 
-    // Calculate month total - Exclude 'lila' category from month totals
+    // Calculate month total
     const monthTotal = currentMonthPayments
-        .filter(p => p.category !== 'lila')
         .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
     // Calculate remaining (unpaid) total
@@ -108,7 +105,6 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         tDate.setHours(0, 0, 0, 0);
         return tDate < today;
     })
-        .filter(p => p.category !== 'lila')
         .reduce((acc, p) => acc + (parseFloat(p.Value) || 0), 0);
 
     const remainingTotal = monthTotal - paidTotal;
@@ -149,8 +145,8 @@ export default function ListView({ year, month, transactions, invoices = [], onP
         'impostos': 'Impostos',
         'manual': 'Manual',
         'recorrentes': 'Recorrentes',
-        'lila': 'Lila',
-        'individual': 'Individual'
+        'individual': 'Individual',
+        'compras': 'Compras'
     };
 
     const getCategoryColor = (category) => {
@@ -162,8 +158,8 @@ export default function ListView({ year, month, transactions, invoices = [], onP
             'impostos': '#f97316',
             'manual': '#ec4899',
             'recorrentes': '#64748b',
-            'lila': '#f472b6',
-            'individual': '#06b6d4'
+            'individual': '#06b6d4',
+            'compras': '#FFE600'
         };
         return colors[category] || '#64748b';
     };

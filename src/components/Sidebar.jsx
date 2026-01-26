@@ -93,7 +93,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
             'impostos': '#f97316',
             'manual': '#ec4899',
             'recorrentes': '#64748b',
-            'lila': '#f472b6',
+            'compras': '#FFE600',
             'individual': '#06b6d4',
             'notas': '#10b981'
         };
@@ -107,7 +107,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
         'periodicos': 'Periódicos',
         'impostos': 'Impostos',
         'recorrentes': 'Recorr.',
-        'lila': 'Lila',
+        'compras': 'Compras',
         'individual': 'Individual',
         'notas': 'Notas'
     };
@@ -197,7 +197,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             <div className={`detail-category category-${selectedPayment.category}`}>
                                 {selectedPayment.category.toUpperCase()}
                             </div>
-                            <h3 className="detail-title">{selectedPayment.Beneficiary}</h3>
+                            <h3 className="detail-title">{selectedPayment.FullName || selectedPayment.Beneficiary}</h3>
                             <div className="detail-value">{formatCurrency(selectedPayment.Value, selectedPayment)}</div>
                             <div className="detail-date">Vencimento: {formatDate(selectedPayment.date)}</div>
 

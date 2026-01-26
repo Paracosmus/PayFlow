@@ -66,7 +66,7 @@ export const adjustToPreviousBusinessDay = (dateStr) => {
 
 /**
  * Does not adjust the date - keeps it as is.
- * Used for: periodicos, individual, lila, notas
+ * Used for: periodicos, individual, notas
  * @param {string|Date} dateStr - The input date string (YYYY-MM-DD or similar).
  * @returns {Date} - The date object without adjustment.
  */
