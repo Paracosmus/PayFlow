@@ -30,6 +30,8 @@ ChartJS.register(
 export default function CategoryYearView({ transactions = [] }) {
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState(currentYear);
+    const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     // Get available years from transactions
     const availableYears = useMemo(() => {
@@ -201,6 +203,35 @@ export default function CategoryYearView({ transactions = [] }) {
             currency: 'BRL',
             minimumFractionDigits: 2
         }).format(value);
+    };
+
+    // Get all payments for the selected beneficiary in the selected year
+    const beneficiaryPayments = useMemo(() => {
+        if (!selectedBeneficiary || !selectedCategory) return [];
+
+        return transactions
+            .filter(t => {
+                const date = new Date(t.date);
+                const beneficiaryName = t.FullName || t.Beneficiary;
+                return (
+                    date.getFullYear() === selectedYear &&
+                    t.category === selectedCategory &&
+                    beneficiaryName === selectedBeneficiary
+                );
+            })
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+    }, [transactions, selectedBeneficiary, selectedCategory, selectedYear]);
+
+    // Handle beneficiary click
+    const handleBeneficiaryClick = (beneficiaryName, category) => {
+        setSelectedBeneficiary(beneficiaryName);
+        setSelectedCategory(category);
+    };
+
+    // Handle modal close
+    const handleCloseModal = () => {
+        setSelectedBeneficiary(null);
+        setSelectedCategory(null);
     };
 
     // Prepare data for monthly line chart (all categories)
@@ -563,7 +594,11 @@ export default function CategoryYearView({ transactions = [] }) {
                                                         </thead>
                                                         <tbody>
                                                             {categoryData.beneficiariesList.map((beneficiary, idx) => (
-                                                                <tr key={idx}>
+                                                                <tr
+                                                                    key={idx}
+                                                                    onClick={() => handleBeneficiaryClick(beneficiary.name, category)}
+                                                                    className="beneficiary-row"
+                                                                >
                                                                     <td className="td-rank">
                                                                         <span className="rank-badge">{idx + 1}</span>
                                                                     </td>
@@ -609,6 +644,89 @@ export default function CategoryYearView({ transactions = [] }) {
                         })}
                     </div>
                 </>
+            )}
+
+            {/* Beneficiary Payments Modal */}
+            {selectedBeneficiary && selectedCategory && (
+                <div className="beneficiary-modal-overlay" onClick={handleCloseModal}>
+                    <div className="beneficiary-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <div>
+                                <h2 className="modal-title">
+                                    {selectedBeneficiary}
+                                </h2>
+                                <p className="modal-subtitle">
+                                    {categoryNames[selectedCategory]} - {selectedYear}
+                                </p>
+                            </div>
+                            <button className="modal-close-btn" onClick={handleCloseModal}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div className="modal-content">
+                            {beneficiaryPayments.length > 0 ? (
+                                <>
+                                    <div className="modal-summary">
+                                        <div className="summary-item">
+                                            <span className="summary-label">Total de Pagamentos:</span>
+                                            <span className="summary-value">{beneficiaryPayments.length}</span>
+                                        </div>
+                                        <div className="summary-item">
+                                            <span className="summary-label">Valor Total:</span>
+                                            <span className="summary-value" style={{ color: getCategoryColor(selectedCategory) }}>
+                                                {formatCurrency(beneficiaryPayments.reduce((sum, p) => sum + (parseFloat(p.Value) || 0), 0))}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="payments-list">
+                                        <table className="payments-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Descrição</th>
+                                                    <th>Valor</th>
+                                                    {beneficiaryPayments.some(p => p.currentInstallment) && (
+                                                        <th>Parcela</th>
+                                                    )}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {beneficiaryPayments.map((payment, idx) => (
+                                                    <tr key={idx}>
+                                                        <td className="payment-date">
+                                                            {new Date(payment.date).toLocaleDateString('pt-BR')}
+                                                        </td>
+                                                        <td className="payment-description">
+                                                            {payment.Description || '-'}
+                                                        </td>
+                                                        <td className="payment-value" style={{ color: getCategoryColor(selectedCategory) }}>
+                                                            {formatCurrency(parseFloat(payment.Value) || 0)}
+                                                        </td>
+                                                        {beneficiaryPayments.some(p => p.currentInstallment) && (
+                                                            <td className="payment-installment">
+                                                                {payment.currentInstallment
+                                                                    ? `${payment.currentInstallment}/${payment.totalInstallments}`
+                                                                    : '-'
+                                                                }
+                                                            </td>
+                                                        )}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </>
+                            ) : (
+                                <p className="no-payments">Nenhum pagamento encontrado.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
