@@ -664,6 +664,24 @@
     white-space: nowrap;
 }
 
+.payment-item {
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.payment-beneficiary {
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .payment-description {
     color: var(--text-secondary);
 }

@@ -32,6 +32,7 @@ export default function CategoryYearView({ transactions = [] }) {
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState(null); // null or 0-11 for month index
 
     // Get available years from transactions
     const availableYears = useMemo(() => {
@@ -96,8 +97,14 @@ export default function CategoryYearView({ transactions = [] }) {
             const month = new Date(t.date).getMonth();
             const value = parseFloat(t.Value) || 0;
 
-            // Get beneficiary name - use FullName if available, otherwise Beneficiary
-            const beneficiaryName = t.FullName || t.Beneficiary || 'Não especificado';
+            // Get beneficiary name
+            // For 'compras' category, use Shop field instead of Item
+            let beneficiaryName;
+            if (category === 'compras') {
+                beneficiaryName = t.Shop || 'Loja não especificada';
+            } else {
+                beneficiaryName = t.FullName || t.Beneficiary || 'Não especificado';
+            }
 
             if (!data[category]) {
                 data[category] = {
@@ -205,33 +212,60 @@ export default function CategoryYearView({ transactions = [] }) {
         }).format(value);
     };
 
-    // Get all payments for the selected beneficiary in the selected year
+    // Get all payments for the selected beneficiary/month in the selected year
     const beneficiaryPayments = useMemo(() => {
-        if (!selectedBeneficiary || !selectedCategory) return [];
+        if ((!selectedBeneficiary && selectedMonth === null) || !selectedCategory) return [];
 
         return transactions
             .filter(t => {
                 const date = new Date(t.date);
-                const beneficiaryName = t.FullName || t.Beneficiary;
-                return (
-                    date.getFullYear() === selectedYear &&
-                    t.category === selectedCategory &&
-                    beneficiaryName === selectedBeneficiary
-                );
+
+                // Filter by year and category
+                if (date.getFullYear() !== selectedYear || t.category !== selectedCategory) {
+                    return false;
+                }
+
+                // If a month is selected, filter by month
+                if (selectedMonth !== null) {
+                    return date.getMonth() === selectedMonth;
+                }
+
+                // Otherwise, filter by beneficiary
+                if (selectedBeneficiary) {
+                    // For 'compras' category, match by Shop field; for others, use FullName/Beneficiary
+                    let beneficiaryName;
+                    if (selectedCategory === 'compras') {
+                        beneficiaryName = t.Shop;
+                    } else {
+                        beneficiaryName = t.FullName || t.Beneficiary;
+                    }
+                    return beneficiaryName === selectedBeneficiary;
+                }
+
+                return false;
             })
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-    }, [transactions, selectedBeneficiary, selectedCategory, selectedYear]);
+            .sort((a, b) => (parseFloat(b.Value) || 0) - (parseFloat(a.Value) || 0)); // Sort by value descending
+    }, [transactions, selectedBeneficiary, selectedCategory, selectedYear, selectedMonth]);
 
     // Handle beneficiary click
     const handleBeneficiaryClick = (beneficiaryName, category) => {
         setSelectedBeneficiary(beneficiaryName);
         setSelectedCategory(category);
+        setSelectedMonth(null); // Clear month selection when selecting beneficiary
+    };
+
+    // Handle month click
+    const handleMonthClick = (monthIndex, category) => {
+        setSelectedMonth(monthIndex);
+        setSelectedCategory(category);
+        setSelectedBeneficiary(null); // Clear beneficiary selection when selecting month
     };
 
     // Handle modal close
     const handleCloseModal = () => {
         setSelectedBeneficiary(null);
         setSelectedCategory(null);
+        setSelectedMonth(null);
     };
 
     // Prepare data for monthly line chart (all categories)
@@ -563,8 +597,10 @@ export default function CategoryYearView({ transactions = [] }) {
                                                     className="month-box"
                                                     style={{
                                                         borderColor: total > 0 ? color : 'var(--border)',
-                                                        backgroundColor: total > 0 ? `${color}15` : 'transparent'
+                                                        backgroundColor: total > 0 ? `${color}15` : 'transparent',
+                                                        cursor: total > 0 ? 'pointer' : 'default'
                                                     }}
+                                                    onClick={() => total > 0 && handleMonthClick(monthIndex, category)}
                                                 >
                                                     <div className="month-name">{monthNames[monthIndex]}</div>
                                                     <div
@@ -646,14 +682,17 @@ export default function CategoryYearView({ transactions = [] }) {
                 </>
             )}
 
-            {/* Beneficiary Payments Modal */}
-            {selectedBeneficiary && selectedCategory && (
+            {/* Beneficiary/Month Payments Modal */}
+            {(selectedBeneficiary || selectedMonth !== null) && selectedCategory && (
                 <div className="beneficiary-modal-overlay" onClick={handleCloseModal}>
                     <div className="beneficiary-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <div>
                                 <h2 className="modal-title">
-                                    {selectedBeneficiary}
+                                    {selectedMonth !== null
+                                        ? monthNames[selectedMonth]
+                                        : selectedBeneficiary
+                                    }
                                 </h2>
                                 <p className="modal-subtitle">
                                     {categoryNames[selectedCategory]} - {selectedYear}
@@ -688,6 +727,12 @@ export default function CategoryYearView({ transactions = [] }) {
                                             <thead>
                                                 <tr>
                                                     <th>Data</th>
+                                                    {selectedMonth !== null && (
+                                                        <th>{selectedCategory === 'compras' ? 'Loja' : 'Beneficiário'}</th>
+                                                    )}
+                                                    {selectedCategory === 'compras' && selectedMonth === null && (
+                                                        <th>Item</th>
+                                                    )}
                                                     <th>Descrição</th>
                                                     <th>Valor</th>
                                                     {beneficiaryPayments.some(p => p.currentInstallment) && (
@@ -701,6 +746,19 @@ export default function CategoryYearView({ transactions = [] }) {
                                                         <td className="payment-date">
                                                             {new Date(payment.date).toLocaleDateString('pt-BR')}
                                                         </td>
+                                                        {selectedMonth !== null && (
+                                                            <td className="payment-beneficiary">
+                                                                {selectedCategory === 'compras'
+                                                                    ? (payment.Shop || '-')
+                                                                    : (payment.FullName || payment.Beneficiary || '-')
+                                                                }
+                                                            </td>
+                                                        )}
+                                                        {selectedCategory === 'compras' && selectedMonth === null && (
+                                                            <td className="payment-item">
+                                                                {payment.FullName || payment.Item || '-'}
+                                                            </td>
+                                                        )}
                                                         <td className="payment-description">
                                                             {payment.Description || '-'}
                                                         </td>
