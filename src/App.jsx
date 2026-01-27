@@ -7,7 +7,6 @@ import InvoiceYearView from './components/InvoiceYearView';
 
 import CategoryYearView from './components/CategoryYearView';
 import { parseCSV } from './utils/csvParser';
-import { normalizeFixedDate, adjustToNextBusinessDay, adjustToPreviousBusinessDay, keepOriginalDate } from './utils/dateUtils';
 import { fetchExchangeRates, convertToBRL, setIOFRate } from './utils/currencyUtils';
 import './index.css';
 
@@ -243,24 +242,59 @@ function App() {
             }
 
             let occurrences = [];
+            // Store interval information for later use
+            let itemIntervalStr = null;
+            let itemIsWeekly = false;
 
             if (file.name === 'periodicos' || file.name === 'individual') {
               // Both 'periodicos' and 'individual' now use the 'Interval' column
-              // Interval defines the payment frequency in months (1 = monthly, 12 = yearly, etc.)
-              // If Interval is empty or 0, it's a one-time payment
+              // Interval defines the payment frequency:
+              // - Numbers (1, 2, 3, etc.): months between payments (1 = monthly, 12 = yearly, etc.)
+              // - "Nweek" format (1week, 2week, etc.): weeks between payments (1week = weekly, 2week = biweekly, etc.)
+              // - Empty or 0: one-time payment
 
-              const intervalValue = item.Interval && item.Interval.toString().trim() !== ''
-                ? parseInt(item.Interval)
-                : 0;
+              const intervalStr = item.Interval && item.Interval.toString().trim() !== ''
+                ? item.Interval.toString().trim()
+                : '0';
+
+              // Check if this is a weekly interval (format: "Nweek")
+              const isWeeklyInterval = /^\d+week$/i.test(intervalStr);
+              let intervalValue = 0;
+              let isWeekly = false;
+
+              if (isWeeklyInterval) {
+                // Extract the number of weeks
+                const weekMatch = intervalStr.match(/^(\d+)week$/i);
+                if (weekMatch) {
+                  intervalValue = parseInt(weekMatch[1]);
+                  isWeekly = true;
+                }
+              } else {
+                // Regular monthly interval
+                intervalValue = parseInt(intervalStr);
+              }
+
+              // Store for later use when creating the data object
+              itemIntervalStr = intervalStr;
+              itemIsWeekly = isWeekly;
 
               // Check if this is a one-time payment (Interval = 0 or empty)
               const isOneTimePayment = intervalValue === 0;
 
               if (!isOneTimePayment) {
                 // Validate interval for recurring payments
-                if (intervalValue < 1 || intervalValue > 120) {
-                  console.warn(`Skipping item with invalid interval in ${file.name}:`, intervalValue);
-                  return;
+                if (isWeekly) {
+                  // For weekly intervals, limit to 520 weeks (10 years)
+                  if (intervalValue < 1 || intervalValue > 520) {
+                    console.warn(`Skipping item with invalid weekly interval in ${file.name}:`, intervalStr);
+                    return;
+                  }
+                } else {
+                  // For monthly intervals, limit to 120 months (10 years)
+                  if (intervalValue < 1 || intervalValue > 120) {
+                    console.warn(`Skipping item with invalid monthly interval in ${file.name}:`, intervalValue);
+                    return;
+                  }
                 }
               }
 
@@ -352,8 +386,15 @@ function App() {
 
                   occurrenceCount++;
 
-                  // Move to next occurrence by adding 'interval' months
-                  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
+                  // Move to next occurrence
+                  if (isWeekly) {
+                    // Add 'interval' weeks (7 days per week)
+                    const daysToAdd = interval * 7;
+                    currentDate = new Date(currentDate.getTime() + (daysToAdd * 24 * 60 * 60 * 1000));
+                  } else {
+                    // Add 'interval' months
+                    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
+                  }
                 }
               }
             } else if (file.name === 'recorrentes') {
@@ -400,25 +441,9 @@ function App() {
             }
 
             occurrences.forEach(occ => {
-              let adjustedDate;
-
-              if (file.name === 'financiamentos' || file.name === 'emprestimos' || file.name === 'impostos') {
-                adjustedDate = normalizeFixedDate(occ.dateStr);
-              } else {
-                adjustedDate = new Date(occ.dateStr + 'T12:00:00');
-              }
-
-              // Apply date adjustment based on table type
-              if (file.name === 'boletos' || file.name === 'emprestimos' || file.name === 'financiamentos') {
-                // Move to next business day if weekend/holiday
-                adjustedDate = adjustToNextBusinessDay(adjustedDate);
-              } else if (file.name === 'impostos' || file.name === 'recorrentes') {
-                // Move to previous business day if weekend/holiday
-                adjustedDate = adjustToPreviousBusinessDay(adjustedDate);
-              } else if (file.name === 'periodicos' || file.name === 'individual') {
-                // Keep original date (no adjustment)
-                adjustedDate = keepOriginalDate(adjustedDate);
-              }
+              // Use the exact date from the occurrence without any adjustments
+              // All entries now appear on their exact registered date
+              const adjustedDate = new Date(occ.dateStr + 'T12:00:00');
 
               if (file.name !== 'periodicos' && file.name !== 'recorrentes' && file.name !== 'individual') {
                 if (adjustedDate > maxDataDate) {
@@ -472,7 +497,10 @@ function App() {
                 // Currency fields
                 currency: originalCurrency,
                 originalValue: originalValue,
-                Value: valueInBRL // Always store BRL value for calculations
+                Value: valueInBRL, // Always store BRL value for calculations
+                // Interval information for periodicos/individual
+                IntervalStr: itemIntervalStr,
+                IsWeekly: itemIsWeekly
               });
             });
           });

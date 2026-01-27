@@ -229,6 +229,19 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             {selectedPayment.Interval && (selectedPayment.category === 'periodicos' || selectedPayment.category === 'individual') && (
                                 <div className="detail-interval">
                                     {(() => {
+                                        // Check if this is a weekly interval
+                                        if (selectedPayment.IsWeekly) {
+                                            const intervalStr = selectedPayment.IntervalStr || selectedPayment.Interval;
+                                            const weekMatch = intervalStr.toString().match(/^(\d+)week$/i);
+                                            if (weekMatch) {
+                                                const weeks = parseInt(weekMatch[1]);
+                                                if (weeks === 1) return 'Cobrança: Semanal';
+                                                if (weeks === 2) return 'Cobrança: Quinzenal';
+                                                return `Cobrança: A cada ${weeks} semanas`;
+                                            }
+                                        }
+
+                                        // Monthly interval (original logic)
                                         const interval = parseInt(selectedPayment.Interval);
                                         if (interval === 1) return 'Cobrança: Mensal';
                                         if (interval === 12) return 'Cobrança: Anual';
