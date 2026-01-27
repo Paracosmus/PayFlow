@@ -153,8 +153,9 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
         'impostos': 'Impostos',
         'manual': 'Manual',
         'recorrentes': 'Recorrentes',
+        'compras': 'Compras',
+        'folha': 'Folha de Pagamento',
         'individual': 'Individual',
-        'compras': 'Compras'
     };
 
     // Get category colors for dots
@@ -167,8 +168,9 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
             'impostos': '#f97316',
             'manual': '#ec4899',
             'recorrentes': '#64748b',
+            'compras': '#FFE600',
+            'folha': '#db2777',
             'individual': '#06b6d4',
-            'compras': '#FFE600'
         };
         return colors[category] || '#64748b';
     };

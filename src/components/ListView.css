@@ -239,6 +239,15 @@
     background: rgba(255, 230, 0, 0.30);
 }
 
+.list-payment-item.category-folha {
+    background: rgba(219, 39, 119, 0.06);
+    border-left-color: #db2777;
+}
+
+.list-payment-item.category-folha:hover {
+    background: rgba(219, 39, 119, 0.25);
+}
+
 .payment-info {
     display: flex;
     align-items: center;

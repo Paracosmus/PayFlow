@@ -258,6 +258,16 @@
     background: rgba(255, 230, 0, 0.35);
 }
 
+.payment-item.category-folha {
+    background: rgba(219, 39, 119, 0.1);
+    border-left: 2px solid #db2777;
+    color: #9f1239;
+}
+
+.payment-item.category-folha:hover {
+    background: rgba(219, 39, 119, 0.30);
+}
+
 .p-left {
     display: flex;
     align-items: center;
@@ -428,6 +438,12 @@
     background: rgba(255, 230, 0, 0.15);
     color: #856404;
     border: 1px solid rgba(255, 230, 0, 0.3);
+}
+
+.cat-total-badge.category-folha {
+    background: rgba(219, 39, 119, 0.1);
+    color: #9f1239;
+    border: 1px solid rgba(219, 39, 119, 0.2);
 }
 
 .totals-container {
@@ -718,6 +734,11 @@
 .mobile-payment-item.category-compras {
     background: rgba(255, 230, 0, 0.12);
     border-left-color: #FFE600;
+}
+
+.mobile-payment-item.category-folha {
+    background: rgba(219, 39, 119, 0.08);
+    border-left-color: #db2777;
 }
 
 .mobile-payment-left {

@@ -24,6 +24,7 @@ export const GOOGLE_SHEETS_CONFIG = {
     impostos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=342630177&single=true&output=csv',
     recorrentes: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=2059867118&single=true&output=csv',
     compras: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=1916499634&single=true&output=csv',
+    folha: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=20656715&single=true&output=csv',
     individual: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0LmrW4gk7423xpxND_qp-QgyHacGH2vEGMuIE3OMF5IVW2HqL-SXPq0wtRM05q19lMvdQsviSbV5t/pub?gid=318522136&single=true&output=csv',
   },
 

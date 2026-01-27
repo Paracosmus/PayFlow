@@ -526,6 +526,18 @@
     background: #64748b;
 }
 
+.detail-card:has(.category-individual)::before {
+    background: #06b6d4;
+}
+
+.detail-card:has(.category-compras)::before {
+    background: #FFE600;
+}
+
+.detail-card:has(.category-folha)::before {
+    background: #db2777;
+}
+
 /* Invoice specific styles */
 .detail-card.invoice-detail::before {
     background: #10b981;

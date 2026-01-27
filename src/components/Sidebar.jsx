@@ -113,6 +113,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
             'manual': '#ec4899',
             'recorrentes': '#64748b',
             'compras': '#FFE600',
+            'folha': '#db2777',
             'individual': '#06b6d4',
             'notas': '#10b981'
         };
@@ -127,6 +128,7 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
         'impostos': 'Impostos',
         'recorrentes': 'Recorr.',
         'compras': 'Compras',
+        'folha': 'Folha',
         'individual': 'Individual',
         'notas': 'Notas'
     };

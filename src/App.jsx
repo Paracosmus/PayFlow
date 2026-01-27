@@ -19,6 +19,7 @@ const ALL_CATEGORIES = [
   'impostos',
   'recorrentes',
   'compras',
+  'folha',
   'individual',
   'notas', // Invoice category
 ];
@@ -183,6 +184,7 @@ function App() {
           'recorrentes',
           'compras',
           'individual',
+          'folha',
         ];
 
         const fetchFile = async (name) => {
@@ -202,14 +204,21 @@ function App() {
           const parsed = parseCSV(file.content);
           console.log(`Parsed ${parsed.length} items from ${file.name}`);
 
+          // Debug log specifically for folha
+          if (file.name === 'folha') {
+            console.log('FOLHA DATA:', parsed);
+            console.log('FOLHA CSV Content (first 500 chars):', file.content.substring(0, 500));
+          }
+
           parsed.forEach(item => {
-            // Validate that we have a date
-            if (!item.Date || typeof item.Date !== 'string') {
+            // Validate that we have a date (support both 'Date' and 'Data' column names)
+            const dateValue = item.Date || item.Data;
+            if (!dateValue || typeof dateValue !== 'string') {
               console.warn(`Skipping item with invalid date in ${file.name}:`, item);
               return;
             }
 
-            const originalDateStr = item.Date;
+            const originalDateStr = dateValue;
 
             // Parse date from Google Sheets format (DD/MM/YYYY)
             let y, m, d;
@@ -225,6 +234,15 @@ function App() {
               y = parseInt(parts[0]);
               m = parseInt(parts[1]);
               d = parseInt(parts[2]);
+            }
+
+            // Debug log for folha date parsing
+            if (file.name === 'folha') {
+              console.log('FOLHA Date parsing:', {
+                originalDateStr,
+                parsed: { y, m, d },
+                isValid: !isNaN(y) && !isNaN(m) && !isNaN(d)
+              });
             }
 
             // Validate parsed date components
@@ -502,9 +520,27 @@ function App() {
                 IntervalStr: itemIntervalStr,
                 IsWeekly: itemIsWeekly
               });
+
+              // Debug log for folha entries
+              if (file.name === 'folha') {
+                console.log('Added FOLHA entry:', {
+                  Beneficiary: beneficiaryName,
+                  Value: valueInBRL,
+                  date: adjustedDate,
+                  originalDate: occ.dateStr
+                });
+              }
             });
           });
         }
+
+        // Debug: Count folha entries
+        const folhaEntries = allData.filter(item => item.category === 'folha');
+        console.log(`Total FOLHA entries in allData: ${folhaEntries.length}`);
+        if (folhaEntries.length > 0) {
+          console.log('Sample FOLHA entry:', folhaEntries[0]);
+        }
+
         setTransactions(allData);
 
         // Load invoices (notas fiscais)
@@ -612,6 +648,7 @@ function App() {
       'manual': 'Manual',
       'recorrentes': 'Recorrentes',
       'compras': 'Compras',
+      'folha': 'Folha de Pagamento',
       'individual': 'Individual',
     };
 

@@ -57,6 +57,7 @@ export default function CategoryYearView({ transactions = [] }) {
             'manual': '#ec4899',
             'recorrentes': '#64748b',
             'compras': '#FFE600',
+            'folha': '#db2777',
             'individual': '#06b6d4',
             'notas': '#10b981'
         };
@@ -71,6 +72,7 @@ export default function CategoryYearView({ transactions = [] }) {
         'impostos': 'Impostos',
         'recorrentes': 'Recorrentes',
         'compras': 'Compras',
+        'folha': 'Folha de Pagamento',
         'individual': 'Individual',
         'notas': 'Notas'
     };
@@ -196,6 +198,7 @@ export default function CategoryYearView({ transactions = [] }) {
             'periodicos',
             'impostos',
             'compras',
+            'folha',
             'individual',
             'notas'
         ];
