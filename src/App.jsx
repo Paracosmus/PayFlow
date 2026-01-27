@@ -36,11 +36,12 @@ function App() {
 
   // Category visibility state - Set of disabled categories
   // On mobile, 'individual' is disabled by default
+  // 'folha' is disabled by default on all devices
   const [disabledCategories, setDisabledCategories] = useState(() => {
     if (window.innerWidth <= 768) {
-      return new Set(['individual']);
+      return new Set(['individual', 'folha']);
     }
-    return new Set();
+    return new Set(['folha']);
   });
 
   // Toggle category visibility
