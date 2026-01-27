@@ -265,8 +265,8 @@ function App() {
             let itemIntervalStr = null;
             let itemIsWeekly = false;
 
-            if (file.name === 'periodicos' || file.name === 'individual') {
-              // Both 'periodicos' and 'individual' now use the 'Interval' column
+            if (file.name === 'periodicos' || file.name === 'individual' || file.name === 'folha') {
+              // 'periodicos', 'individual', and 'folha' use the 'Interval' column
               // Interval defines the payment frequency:
               // - Numbers (1, 2, 3, etc.): months between payments (1 = monthly, 12 = yearly, etc.)
               // - "Nweek" format (1week, 2week, etc.): weeks between payments (1week = weekly, 2week = biweekly, etc.)
@@ -464,7 +464,7 @@ function App() {
               // All entries now appear on their exact registered date
               const adjustedDate = new Date(occ.dateStr + 'T12:00:00');
 
-              if (file.name !== 'periodicos' && file.name !== 'recorrentes' && file.name !== 'individual') {
+              if (file.name !== 'periodicos' && file.name !== 'recorrentes' && file.name !== 'individual' && file.name !== 'folha') {
                 if (adjustedDate > maxDataDate) {
                   maxDataDate = adjustedDate;
                 }
@@ -517,7 +517,7 @@ function App() {
                 currency: originalCurrency,
                 originalValue: originalValue,
                 Value: valueInBRL, // Always store BRL value for calculations
-                // Interval information for periodicos/individual
+                // Interval information for periodicos/individual/folha
                 IntervalStr: itemIntervalStr,
                 IsWeekly: itemIsWeekly
               });

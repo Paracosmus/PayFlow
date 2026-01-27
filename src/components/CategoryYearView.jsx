@@ -729,6 +729,7 @@ export default function CategoryYearView({ transactions = [] }) {
                                         <table className="payments-table">
                                             <thead>
                                                 <tr>
+                                                    <th className="th-rank">#</th>
                                                     <th>Data</th>
                                                     {selectedMonth !== null && (
                                                         <th>{selectedCategory === 'compras' ? 'Loja' : 'Beneficiário'}</th>
@@ -746,6 +747,9 @@ export default function CategoryYearView({ transactions = [] }) {
                                             <tbody>
                                                 {beneficiaryPayments.map((payment, idx) => (
                                                     <tr key={idx}>
+                                                        <td className="td-rank">
+                                                            <span className="rank-badge">{idx + 1}</span>
+                                                        </td>
                                                         <td className="payment-date">
                                                             {new Date(payment.date).toLocaleDateString('pt-BR')}
                                                         </td>
