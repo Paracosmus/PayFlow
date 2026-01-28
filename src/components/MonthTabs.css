@@ -5,7 +5,7 @@
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 15px 10px;
+    padding: 5px 0px 2px 0px;
     background: rgba(255, 255, 255, 0.9);
     border-bottom: 1px solid var(--border);
     gap: 12px;
@@ -75,7 +75,6 @@
 .tab-btn.active {
     background: linear-gradient(135deg, #059669 0%, #10b981 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
 }
