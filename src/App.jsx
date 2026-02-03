@@ -8,6 +8,7 @@ import InvoiceYearView from './components/InvoiceYearView';
 import CategoryYearView from './components/CategoryYearView';
 import { parseCSV } from './utils/csvParser';
 import { fetchExchangeRates, convertToBRL, setIOFRate } from './utils/currencyUtils';
+import { normalizeFixedDate, formatDateKey } from './utils/dateUtils';
 import './index.css';
 
 // All categories available in the app
@@ -318,13 +319,16 @@ function App() {
               }
 
               // Create reference date from the original CSV entry
-              const referenceDate = new Date(y, m - 1, d);
+              // Normalize to handle invalid dates (e.g., Feb 31 -> Feb 28/29)
+              const referenceDateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+              const referenceDate = normalizeFixedDate(referenceDateStr);
 
               if (isOneTimePayment) {
                 // One-time payment: add only the reference date
                 const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const normalizedDate = normalizeFixedDate(dateStr);
                 occurrences.push({
-                  dateStr: dateStr,
+                  dateStr: formatDateKey(normalizedDate),
                   currentInstallment: null,
                   totalInstallments: null
                 });
@@ -412,7 +416,19 @@ function App() {
                     currentDate = new Date(currentDate.getTime() + (daysToAdd * 24 * 60 * 60 * 1000));
                   } else {
                     // Add 'interval' months
-                    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + interval, currentDate.getDate());
+                    // Calculate next month and year
+                    let nextMonth = currentDate.getMonth() + interval;
+                    let nextYear = currentDate.getFullYear();
+
+                    // Handle month overflow
+                    while (nextMonth >= 12) {
+                      nextMonth -= 12;
+                      nextYear++;
+                    }
+
+                    // Use original day from CSV and normalize to handle invalid dates
+                    const dateStr = `${nextYear}-${String(nextMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    currentDate = normalizeFixedDate(dateStr);
                   }
                 }
               }
@@ -423,16 +439,16 @@ function App() {
               const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
               years.forEach(year => {
                 for (let month = 1; month <= 12; month++) {
-                  // Create candidate date for this occurrence
-                  const candidateDate = new Date(year, month - 1, d);
+                  // Create date string and normalize it to handle invalid dates
+                  const mStr = String(month).padStart(2, '0');
+                  const dStr = String(d).padStart(2, '0');
+                  const dateStr = `${year}-${mStr}-${dStr}`;
+                  const candidateDate = normalizeFixedDate(dateStr);
 
                   // Only add occurrence if candidate date is >= reference date
                   if (candidateDate >= referenceDate) {
-                    const mStr = String(month).padStart(2, '0');
-                    const dStr = String(d).padStart(2, '0');
-                    const dateStr = `${year}-${mStr}-${dStr}`;
                     occurrences.push({
-                      dateStr: dateStr,
+                      dateStr: formatDateKey(candidateDate),
                       currentInstallment: null,
                       totalInstallments: null
                     });
@@ -446,17 +462,21 @@ function App() {
                 const targetMonth = targetDate.getMonth() + 1;
 
                 const iDateStr = `${targetYear}-${String(targetMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                // Normalize the date to handle invalid days (e.g., Feb 31 -> Feb 28/29)
+                const normalizedDate = normalizeFixedDate(iDateStr);
 
                 occurrences.push({
-                  dateStr: iDateStr,
+                  dateStr: formatDateKey(normalizedDate),
                   currentInstallment: i + 1,
                   totalInstallments: installments
                 });
               }
             } else {
-              // For regular categories (boletos), use the parsed date in YYYY-MM-DD format
+              // For regular categories (boletos, compras), use the parsed date in YYYY-MM-DD format
+              // Normalize to handle invalid dates (e.g., Feb 31 -> Feb 28/29)
               const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-              occurrences.push({ dateStr: dateStr, currentInstallment: null, totalInstallments: null });
+              const normalizedDate = normalizeFixedDate(dateStr);
+              occurrences.push({ dateStr: formatDateKey(normalizedDate), currentInstallment: null, totalInstallments: null });
             }
 
             occurrences.forEach(occ => {

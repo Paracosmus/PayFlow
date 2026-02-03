@@ -8,11 +8,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['vite.svg'],
+      includeAssets: ['icon-192x192.webp', 'icon-512x512.webp'],
       manifest: {
         name: 'PayFlow',
         short_name: 'PayFlow',
-        description: '',
+        description: 'Gerenciador de fluxo financeiro pessoal',
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',
         display: 'standalone',
@@ -20,21 +20,22 @@ export default defineConfig({
         scope: '/PayFlow/',
         icons: [
           {
-            src: 'vite.svg',
-            sizes: '32x32',
-            type: 'image/svg+xml'
-          },
-          {
-            src: 'vite.svg',
+            src: 'icon-192x192.webp',
             sizes: '192x192',
-            type: 'image/svg+xml',
+            type: 'image/webp',
             purpose: 'any'
           },
           {
-            src: 'vite.svg',
+            src: 'icon-512x512.webp',
             sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'any maskable'
+            type: 'image/webp',
+            purpose: 'any'
+          },
+          {
+            src: 'icon-512x512.webp',
+            sizes: '512x512',
+            type: 'image/webp',
+            purpose: 'maskable'
           }
         ]
       },
