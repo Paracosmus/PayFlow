@@ -8,17 +8,29 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-192x192.webp', 'icon-512x512.webp'],
+      includeAssets: ['icon-144x144.webp', 'icon-192x192.webp', 'icon-512x512.webp'],
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      },
       manifest: {
+        id: '/PayFlow/',
         name: 'PayFlow',
         short_name: 'PayFlow',
         description: 'Gerenciador de fluxo financeiro pessoal',
+        lang: 'pt-BR',
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',
         display: 'standalone',
         start_url: '/PayFlow/',
         scope: '/PayFlow/',
         icons: [
+          {
+            src: 'icon-144x144.webp',
+            sizes: '144x144',
+            type: 'image/webp',
+            purpose: 'any'
+          },
           {
             src: 'icon-192x192.webp',
             sizes: '192x192',
