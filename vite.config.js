@@ -26,25 +26,25 @@ export default defineConfig({
         scope: '/PayFlow/',
         icons: [
           {
-            src: 'icon-144x144.webp',
+            src: '/PayFlow/icon-144x144.webp',
             sizes: '144x144',
             type: 'image/webp',
             purpose: 'any'
           },
           {
-            src: 'icon-192x192.webp',
+            src: '/PayFlow/icon-192x192.webp',
             sizes: '192x192',
             type: 'image/webp',
             purpose: 'any'
           },
           {
-            src: 'icon-512x512.webp',
+            src: '/PayFlow/icon-512x512.webp',
             sizes: '512x512',
             type: 'image/webp',
             purpose: 'any'
           },
           {
-            src: 'icon-512x512.webp',
+            src: '/PayFlow/icon-512x512.webp',
             sizes: '512x512',
             type: 'image/webp',
             purpose: 'maskable'
