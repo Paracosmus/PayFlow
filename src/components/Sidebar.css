@@ -680,6 +680,34 @@
     }
 }
 
+/* Mobile Install Button */
+.mobile-install-btn {
+    display: flex;
+    align-items: center;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    margin-right: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, background-color 0.2s;
+    height: 36px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-install-btn:active {
+    transform: scale(0.95);
+    background-color: #047857;
+}
+
+.mobile-install-btn svg {
+    display: block;
+}
+
 /* Mobile Bottom Sheet Header */
 .mobile-sidebar-header {
     display: flex;
