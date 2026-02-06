@@ -114,8 +114,8 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
         return brlFormatted;
     };
 
-    const weekDayNames = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-    const weekDayNamesShort = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
+    const weekDayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const weekDayNamesShort = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
     // Calculate category totals - STRICTLY for current month
     const currentMonthPayments = transactions.filter(t => {

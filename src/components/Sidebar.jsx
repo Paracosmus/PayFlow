@@ -3,25 +3,6 @@ import './Sidebar.css';
 
 export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory, searchQuery = '', onSearch }) {
     const [localSearchInput, setLocalSearchInput] = useState(searchQuery);
-    const [deferredPrompt, setDeferredPrompt] = useState(null);
-
-    useEffect(() => {
-        const handler = (e) => {
-            e.preventDefault();
-            setDeferredPrompt(e);
-        };
-        window.addEventListener('beforeinstallprompt', handler);
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-    }, []);
-
-    const handleInstallClick = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            setDeferredPrompt(null);
-        }
-    };
 
     const formatCurrency = (val, item = null) => {
         const brlFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);

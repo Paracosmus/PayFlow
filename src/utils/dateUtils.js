@@ -138,8 +138,8 @@ export const getCalendarDays = (year, month) => {
 
     // Get day of week: 0 (Sun) to 6 (Sat)
     let startDay = firstDay.getDay();
-    // Convert to Monday-based week: Monday = 0, Sunday = 6
-    startDay = (startDay === 0) ? 6 : startDay - 1;
+    // Sunday-based week: Sunday = 0, Monday = 1, ...
+    // No conversion needed as getDay() returns 0 for Sunday
 
     const daysInMonth = lastDay.getDate();
 
