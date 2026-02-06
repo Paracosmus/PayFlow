@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import './Sidebar.css';
 
-export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory, searchQuery = '', onSearch }) {
+export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment, selectedInvoice, onBack, isMobile = false, isOpen = false, onClose, categories = [], disabledCategories = new Set(), onToggleCategory, searchQuery = '', onSearch, duplicates = [], onDuplicateClick }) {
     const [localSearchInput, setLocalSearchInput] = useState(searchQuery);
 
     const formatCurrency = (val, item = null) => {
@@ -330,6 +330,56 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                     </div>
                     {searchBox}
                     {categoryToggles}
+
+                    {/* Duplicates section */}
+                    {duplicates.length > 0 && (
+                        <div className="duplicates-section">
+                            <div className="duplicates-header">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                    <line x1="12" y1="9" x2="12" y2="13" />
+                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
+                                <span>Entradas Duplicadas ({duplicates.length})</span>
+                            </div>
+                            <div className="duplicates-list">
+                                {duplicates.map((dup) => {
+                                    const categoryColor = getCategoryColor(dup.category);
+                                    const firstItem = dup.items[0];
+                                    return (
+                                        <button
+                                            key={dup.id}
+                                            className="duplicate-card"
+                                            onClick={() => onDuplicateClick && onDuplicateClick(firstItem)}
+                                            title={`Clique para navegar até ${new Date(firstItem.date).toLocaleDateString('pt-BR')}`}
+                                            style={{
+                                                borderLeftColor: categoryColor,
+                                                background: `linear-gradient(90deg, ${categoryColor}08 0%, transparent 100%)`
+                                            }}
+                                        >
+                                            <div className="duplicate-card-content">
+                                                <div className="duplicate-card-name" title={dup.name}>
+                                                    {dup.name}
+                                                </div>
+                                                <div className="duplicate-card-date">
+                                                    {new Date(firstItem.date).toLocaleDateString('pt-BR')}
+                                                </div>
+                                            </div>
+                                            <div
+                                                className="duplicate-card-badge"
+                                                style={{
+                                                    backgroundColor: `${categoryColor}20`,
+                                                    color: categoryColor
+                                                }}
+                                            >
+                                                {dup.count}x
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </>

@@ -9,6 +9,7 @@ import CategoryYearView from './components/CategoryYearView';
 import { parseCSV } from './utils/csvParser';
 import { fetchExchangeRates, convertToBRL, setIOFRate } from './utils/currencyUtils';
 import { normalizeFixedDate, formatDateKey } from './utils/dateUtils';
+import { findDuplicates, formatDuplicatesForDisplay } from './utils/duplicateDetector';
 import './index.css';
 
 // All categories available in the app
@@ -708,6 +709,15 @@ function App() {
     return invoices.filter(inv => matchesSearch(inv, searchQuery, true));
   }, [invoices, disabledCategories, searchQuery]);
 
+  // Detect duplicate entries across all tables (EXCEPT invoices/notas)
+  const duplicates = useMemo(() => {
+    // Only check transactions for duplicates
+    // Invoices (notas fiscais) are NOT checked because it's common to have
+    // multiple invoices with the same value, date, and client
+    const duplicateGroups = findDuplicates(transactions);
+    return formatDuplicatesForDisplay(duplicateGroups);
+  }, [transactions]);
+
   // Calculate remaining to pay from today until the end of the selected month
   const remainingToPay = useMemo(() => {
     const today = new Date();
@@ -766,6 +776,22 @@ function App() {
     setIsSidebarOpen(false);
   };
 
+  const handleDuplicateClick = (duplicateItem) => {
+    // Navigate to the month of the duplicate entry
+    const itemDate = new Date(duplicateItem.date);
+    setCurrentDate(itemDate);
+
+    // Switch to calendar view if not already
+    if (viewMode !== 'calendar') {
+      setViewMode('calendar');
+    }
+
+    // Close sidebar on mobile
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  };
+
 
   return (
     <div className="app-container">
@@ -783,6 +809,8 @@ function App() {
           onToggleCategory={toggleCategory}
           searchQuery={searchQuery}
           onSearch={handleSearch}
+          duplicates={duplicates}
+          onDuplicateClick={handleDuplicateClick}
         />
       )}
 
@@ -926,6 +954,8 @@ function App() {
           onToggleCategory={toggleCategory}
           searchQuery={searchQuery}
           onSearch={handleSearch}
+          duplicates={duplicates}
+          onDuplicateClick={handleDuplicateClick}
         />
       )}
 

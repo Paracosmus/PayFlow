@@ -343,6 +343,7 @@
     text-shadow: 0 0 1px rgba(16, 185, 129, 0.2);
 }
 
+
 /* Scrollbar styling for accounts list */
 .accounts-grid::-webkit-scrollbar {
     width: 4px;
@@ -355,6 +356,24 @@
 .accounts-grid::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 2px;
+}
+
+/* Scrollbar styling for sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
 }
 
 /* Details Panel */
@@ -822,4 +841,182 @@
 .mobile-sidebar .accounts-grid {
     overflow-y: visible;
     max-height: none;
+}
+
+/* ============================================
+   DUPLICATES SECTION
+   ============================================ */
+.duplicates-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+.duplicates-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    background: rgba(239, 68, 68, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.duplicates-header svg {
+    color: #ef4444;
+    flex-shrink: 0;
+}
+
+.duplicates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Duplicate Card - Simplified clickable card */
+.duplicate-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--border);
+    border-radius: 8px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: 100%;
+    text-align: left;
+}
+
+.duplicate-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-left-width: 5px;
+}
+
+.duplicate-card:active {
+    transform: translateY(0px);
+}
+
+.duplicate-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.duplicate-card-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.duplicate-card-date {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.duplicate-card:hover .duplicate-card-name {
+    color: var(--primary);
+}
+
+.duplicate-card:hover .duplicate-card-date {
+    color: var(--primary);
+    opacity: 0.8;
+}
+
+.duplicate-card-badge {
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 16px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.duplicate-card:hover .duplicate-card-badge {
+    transform: scale(1.05);
+}
+
+.duplicate-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    padding-left: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.duplicate-item:hover {
+    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.2);
+    transform: translateX(4px);
+}
+
+.duplicate-item:active {
+    transform: translateX(2px);
+}
+
+.duplicate-item-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.duplicate-item:hover .duplicate-item-label {
+    color: var(--primary);
+}
+
+.duplicate-item-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.duplicate-item:hover .duplicate-item-value {
+    color: var(--primary);
+}
+
+/* Mobile adjustments for duplicates */
+@media (max-width: 768px) {
+    .duplicates-section {
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+
+    .duplicate-name {
+        font-size: 0.8rem;
+    }
+
+    .duplicate-date {
+        font-size: 0.65rem;
+    }
+
+    .duplicate-item {
+        padding: 10px;
+    }
+
+    .duplicate-item-date,
+    .duplicate-item-value {
+        font-size: 0.75rem;
+    }
 }
