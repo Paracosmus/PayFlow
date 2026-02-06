@@ -294,6 +294,11 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                         [{p.currentInstallment}/{p.totalInstallments}]
                                                     </span>
                                                 )}
+                                                {p.category === 'compras' && p.Shop && (
+                                                    <span className="mobile-payment-inst">
+                                                        [{p.Shop}]
+                                                    </span>
+                                                )}
                                             </div>
                                             {p.category !== 'recorrentes' && (
                                                 <span className="mobile-payment-value">
@@ -413,6 +418,9 @@ export default function Calendar({ year, month, transactions, invoices = [], onP
                                                         <span className="p-name">{p.Beneficiary}</span>
                                                         {p.totalInstallments && p.totalInstallments > 1 && (
                                                             <span className="p-inst">[{p.currentInstallment}/{p.totalInstallments}]</span>
+                                                        )}
+                                                        {p.category === 'compras' && p.Shop && (
+                                                            <span className="p-inst">[{p.Shop}]</span>
                                                         )}
                                                     </div>
                                                     {p.category !== 'recorrentes' && (

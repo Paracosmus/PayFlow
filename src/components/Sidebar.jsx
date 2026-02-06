@@ -228,6 +228,12 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                                 </div>
                             )}
 
+                            {selectedPayment.category === 'compras' && selectedPayment.Shop && (
+                                <div className="detail-shop">
+                                    Loja: {selectedPayment.Shop}
+                                </div>
+                            )}
+
                             {selectedPayment.Interval && (selectedPayment.category === 'periodicos' || selectedPayment.category === 'individual') && (
                                 <div className="detail-interval">
                                     {(() => {

@@ -13,16 +13,16 @@ import './index.css';
 
 // All categories available in the app
 const ALL_CATEGORIES = [
+  'notas', // Invoice category
   'boletos',
   'financiamentos',
   'emprestimos',
   'periodicos',
   'impostos',
-  'recorrentes',
   'compras',
+  'recorrentes',
   'folha',
   'individual',
-  'notas', // Invoice category
 ];
 
 function App() {

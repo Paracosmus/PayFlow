@@ -240,6 +240,11 @@ export default function ListView({ year, month, transactions, invoices = [], onP
                                                             [{p.currentInstallment}/{p.totalInstallments}]
                                                         </span>
                                                     )}
+                                                    {p.category === 'compras' && p.Shop && (
+                                                        <span className="payment-installment">
+                                                            [{p.Shop}]
+                                                        </span>
+                                                    )}
                                                     <span className="payment-category">{categoryNames[p.category] || p.category}</span>
                                                 </div>
                                                 {p.category !== 'recorrentes' && (
