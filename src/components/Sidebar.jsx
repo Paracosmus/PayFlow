@@ -408,16 +408,6 @@ export default function Sidebar({ accounts, remainingToPay = 0, selectedPayment,
                             </svg>
                             <h2>PayFlow</h2>
                         </div>
-                        {deferredPrompt && (
-                            <button className="mobile-install-btn" onClick={handleInstallClick} title="Instalar App">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                    <polyline points="7 10 12 15 17 10" />
-                                    <line x1="12" y1="15" x2="12" y2="3" />
-                                </svg>
-                                <span style={{ marginLeft: '8px', fontSize: '0.9rem' }}>Instalar</span>
-                            </button>
-                        )}
                         <button className="mobile-close-btn" onClick={onClose}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M18 6L6 18M6 6l12 12" />
