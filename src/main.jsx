@@ -1,19 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.jsx'
-
-// Register Service Worker
-registerSW({
-  immediate: true,
-  onNeedRefresh() {
-    console.log('Update available, auto-reloading...')
-  },
-  onOfflineReady() {
-    console.log('App ready to work offline')
-  },
-})
 
 // Global error handler for debugging production/local build issues
 window.onerror = function (message, source, lineno, colno, error) {

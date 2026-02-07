@@ -190,6 +190,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
+    margin-top: 15px;
 }
 
 .toggles-grid {
@@ -709,6 +710,7 @@
 
 .mobile-sidebar-header .brand {
     margin-bottom: 0;
+    margin-left: 20px;
 }
 
 .mobile-sidebar-header .brand h2 {
@@ -774,6 +776,21 @@
 
     .mobile-sidebar .detail-value {
         font-size: 1.3rem !important;
+    }
+
+    .mobile-sidebar .search-box {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .mobile-sidebar .category-toggles {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .mobile-sidebar .duplicates-section {
+        padding-left: 20px;
+        padding-right: 20px;
     }
 }
 
